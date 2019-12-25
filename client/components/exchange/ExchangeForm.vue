@@ -9,14 +9,23 @@
     >
       <!-- balances -->
       <v-flex justify-space-between d-flex class="exchange-block-title">
-        <v-flex d-flex grow class="keep-inline b-half">{{ isBuy ? $t('exchange.order-form.title.buy') : $t('exchange.order-form.title.sell') }} &nbsp;<asset-pairs v-if="!asset_is_custom" :max-width="'calc(100% - 30px)'" :asset-id="quoteCurrency" /></v-flex>
+        <v-flex d-flex grow class="keep-inline b-half">
+          {{ isBuy ? $t('exchange.order-form.title.buy') : $t('exchange.order-form.title.sell') }} &nbsp;
+          <asset-pairs
+            v-if="!asset_is_custom"
+            :max-width="'calc(100% - 30px)'"
+            :asset-id="quoteCurrency"
+          />
+        </v-flex>
         <v-flex class="text-lg-right money keep-inline">
-          <v-icon size="16" v-text="'ic-balance_wallet'"/>
+          <v-icon size="16" v-text="'ic-balance_wallet'" />
           <span v-if="hideBalance">--</span>
           <span v-else>
-            <span v-if="balances" v-text="balances"/>
+            <span v-if="balances" v-text="balances" />
           </span>
-          <span class="unit"><asset-pairs :max-width="'45%'" :asset-id="isBuy ? baseCurrency : quoteCurrency" /></span>
+          <span class="unit">
+            <asset-pairs :max-width="'45%'" :asset-id="isBuy ? baseCurrency : quoteCurrency" />
+          </span>
         </v-flex>
       </v-flex>
       <!-- price -->
@@ -34,12 +43,17 @@
               @input="validUserInput('price', $event)"
               class="d-flex exchange-form-input theme--cybex-dark"
               :step="getStep('price_step')"
-            >
-            <span class="exchange-form-input-suffix"><asset-pairs :color-opacity="0.5" :max-width="'60px'" :asset-id="baseCurrency" /></span>
+            />
+            <span class="exchange-form-input-suffix">
+              <asset-pairs :color-opacity="0.5" :max-width="'60px'" :asset-id="baseCurrency" />
+            </span>
             <span v-if="priceError" class="exchange-form-input-error">{{ priceError }}</span>
           </div>
           <span class="legal-tender c-white-30">
-            <template v-if="legalPrice">≈ <span v-text="legalPrice"/></template>
+            <template v-if="legalPrice">
+              ≈
+              <span v-text="legalPrice" />
+            </template>
           </span>
         </v-layout>
       </v-layout>
@@ -58,8 +72,10 @@
               @input="validUserInput('amount', $event)"
               class="d-flex exchange-form-input"
               :step="getStep('amount_step')"
-            >
-            <span class="exchange-form-input-suffix"><asset-pairs :color-opacity="0.5" :max-width="'60px'" :asset-id="quoteCurrency" /></span>
+            />
+            <span class="exchange-form-input-suffix">
+              <asset-pairs :color-opacity="0.5" :max-width="'60px'" :asset-id="quoteCurrency" />
+            </span>
             <span v-if="amountError" class="exchange-form-input-error">{{ amountError }}</span>
           </div>
           <v-flex d-flex justify-space-between class="flex-label amount">
@@ -87,8 +103,10 @@
               @keypress="validUserKeypress($event)"
               @input="validUserInput('total', $event)"
               class="d-flex exchange-form-input"
-            >
-            <span class="exchange-form-input-suffix"><asset-pairs :color-opacity="0.5" :max-width="'60px'" :asset-id="baseCurrency"/></span>
+            />
+            <span class="exchange-form-input-suffix">
+              <asset-pairs :color-opacity="0.5" :max-width="'60px'" :asset-id="baseCurrency" />
+            </span>
             <span v-if="totalError" class="exchange-form-input-error">{{ totalError }}</span>
           </div>
         </v-flex>
@@ -103,18 +121,15 @@
         <!-- fee -->
         <v-layout class="fee">
           <span class="label mr-2">{{ $t('exchange.order-form.label.fee') }}:</span>
-          <span class="money" v-if="fee.length === 0" v-text="'--'"/>
+          <span class="money" v-if="fee.length === 0" v-text="'--'" />
           <span class="money" v-else v-for="(f,i) in fee" :key="i">
             {{ f.amount }}
-            <span class="unit"><asset-pairs :asset-id="f.asset_id" /></span>
+            <span class="unit">
+              <asset-pairs :asset-id="f.asset_id" />
+            </span>
           </span>
-          <v-tooltip
-            right 
-            top
-            :nudge-right="100"
-            :nudge-top="8"
-            :content-class="'cybex-tips'">
-            <span slot="activator" class="ml-1 desc ic-help"/>
+          <v-tooltip right top :nudge-right="100" :nudge-top="8" :content-class="'cybex-tips'">
+            <span slot="activator" class="ml-1 desc ic-help" />
             <span>{{ $t('exchange.order-form.fee-desc') }}</span>
           </v-tooltip>
         </v-layout>
@@ -125,14 +140,14 @@
           block
           :class="{'is-buy': isBuy}"
           @click="beforeCreateTrade"
-        >{{ isBuy ? $t('exchange.order-form.title.buy') : $t('exchange.order-form.title.sell') }} &nbsp; <asset-pairs :asset-id="quoteCurrency" /></cybex-btn>
-        <cybex-btn
-          v-else
-          normal
-          block
-          :class="{'is-buy': isBuy}"
-          :disabled="true"
-        >{{ isBuy ? $t('exchange.order-form.title.buy') : $t('exchange.order-form.title.sell') }}&nbsp; <asset-pairs :asset-id="quoteCurrency" /></cybex-btn>
+        >
+          {{ isBuy ? $t('exchange.order-form.title.buy') : $t('exchange.order-form.title.sell') }} &nbsp;
+          <asset-pairs :asset-id="quoteCurrency" />
+        </cybex-btn>
+        <cybex-btn v-else normal block :class="{'is-buy': isBuy}" :disabled="true">
+          {{ isBuy ? $t('exchange.order-form.title.buy') : $t('exchange.order-form.title.sell') }}&nbsp;
+          <asset-pairs :asset-id="quoteCurrency" />
+        </cybex-btn>
       </template>
     </v-form>
     <!-- form end -->
@@ -141,22 +156,25 @@
       <v-card>
         <v-card-title class="headline">
           {{ $t('exchange.dialog.confirm-order', {
-            action: isBuy ? $t('exchange.order-form.title.buy') : $t('exchange.order-form.title.sell'),
-            currency: shortenQuoteCurrency
+          action: isBuy ? $t('exchange.order-form.title.buy') : $t('exchange.order-form.title.sell'),
+          currency: shortenQuoteCurrency
           }) }}
         </v-card-title>
         <v-card-text class="headline">
           <p class="line head" :class="{'c-buy': isBuy, 'c-sell': !isBuy}">
             <span class="label">{{ $t('exchange.order-form.label.price') }}:</span>
-            {{ confirmPrice }} <asset-pairs :asset-id="baseCurrency" />
+            {{ confirmPrice }}
+            <asset-pairs :asset-id="baseCurrency" />
           </p>
           <p class="line">
             <span class="label">{{ $t('exchange.order-form.label.amount') }}:</span>
-            {{ amount }} <asset-pairs :asset-id="quoteCurrency" />
+            {{ amount }}
+            <asset-pairs :asset-id="quoteCurrency" />
           </p>
           <p class="line">
             <span class="label">{{ $t('exchange.order-form.label.total') }}:</span>
-            {{ total }} <asset-pairs :asset-id="baseCurrency" />
+            {{ total }}
+            <asset-pairs :asset-id="baseCurrency" />
           </p>
           <p class="line" v-if="fee.length > 0">
             <span class="label">{{ $t('exchange.order-form.label.fee') }}:</span>
@@ -192,8 +210,10 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import { divide, findIndex, floor, ceil, round } from "lodash";
-import { BigNumber } from 'bignumber.js';
+import { BigNumber } from "bignumber.js";
 import utils from "~/components/mixins/utils";
+import CybexDotClient from "~/components/exchange/CybexDotClient";
+
 export default {
   name: "ExchangeForm",
   props: {
@@ -247,7 +267,7 @@ export default {
   },
   watch: {
     // 用户名变化时 重新拉取数据
-    username: async function(val){
+    username: async function(val) {
       this.balances = null;
       this.fee = [];
       this.CYBAmount = null;
@@ -297,7 +317,9 @@ export default {
       let price;
       if (this.isBuy) {
         // set price change
-        price = this.asset_is_custom ? this.$options.filters.shortenPrice(newV.buyPrice) : newV.buyPrice;
+        price = this.asset_is_custom
+          ? this.$options.filters.shortenPrice(newV.buyPrice)
+          : newV.buyPrice;
         if (parseFloat(price) === 0 && newV.autoSet) {
           this.legalPrice = null;
         } else {
@@ -315,7 +337,9 @@ export default {
           this.recalculateForm("price");
         }
       } else {
-        price = this.asset_is_custom ? this.$options.filters.shortenPrice(newV.sellPrice) : newV.sellPrice;
+        price = this.asset_is_custom
+          ? this.$options.filters.shortenPrice(newV.sellPrice)
+          : newV.sellPrice;
         if (parseFloat(price) === 0) {
           this.legalPrice = null;
         } else {
@@ -361,10 +385,14 @@ export default {
     },
     confirmPrice: function() {
       const total = new BigNumber(this.total);
-      let t = this.isBuy 
-        ? total.dividedBy(this.amount).toFixed(this.priceDigits, BigNumber.ROUND_FLOOR)
-        : total.dividedBy(this.amount).toFixed(this.priceDigits, BigNumber.ROUND_CEIL);
-        t = this.$options.filters.shortenPrice(t);
+      let t = this.isBuy
+        ? total
+            .dividedBy(this.amount)
+            .toFixed(this.priceDigits, BigNumber.ROUND_FLOOR)
+        : total
+            .dividedBy(this.amount)
+            .toFixed(this.priceDigits, BigNumber.ROUND_CEIL);
+      t = this.$options.filters.shortenPrice(t);
       return t;
     },
     priceError: function() {
@@ -372,7 +400,9 @@ export default {
         return this.$t("exchange.order-form.valid.price", { value: 0 });
       }
       if (this.$refs.priceInput) {
-        return this.$refs.priceInput.validity.badInput ? this.$t("exchange.order-form.valid.number") : '';
+        return this.$refs.priceInput.validity.badInput
+          ? this.$t("exchange.order-form.valid.number")
+          : "";
       }
       return "";
     },
@@ -388,7 +418,9 @@ export default {
         });
       }
       if (this.$refs.amountInput) {
-        return this.$refs.amountInput.validity.badInput ? this.$t("exchange.order-form.valid.number") : '';
+        return this.$refs.amountInput.validity.badInput
+          ? this.$t("exchange.order-form.valid.number")
+          : "";
       }
       return "";
     },
@@ -398,39 +430,47 @@ export default {
         return this.$t("exchange.order-form.valid.total", { value: minTotal });
       }
       if (this.$refs.totalInput) {
-        return this.$refs.totalInput.validity.badInput ? this.$t("exchange.order-form.valid.number") : '';
+        return this.$refs.totalInput.validity.badInput
+          ? this.$t("exchange.order-form.valid.number")
+          : "";
       }
       return "";
     },
     priceDigits: function() {
       const defaultDigits = this.asset_is_custom ? 8 : 2;
-      return new BigNumber(this.getPairConfig(
-        this.baseCurrency,
-        this.quoteCurrency,
-        "book",
-        "last_price",
-        defaultDigits
-      )).toNumber();
+      return new BigNumber(
+        this.getPairConfig(
+          this.baseCurrency,
+          this.quoteCurrency,
+          "book",
+          "last_price",
+          defaultDigits
+        )
+      ).toNumber();
     },
     totalDigits: function() {
       const defaultDigits = this.asset_is_custom ? this.base_digits : 2;
-      return new BigNumber(this.getPairConfig(
-        this.baseCurrency,
-        this.quoteCurrency,
-        "book",
-        "total",
-        defaultDigits
-      )).toNumber();
+      return new BigNumber(
+        this.getPairConfig(
+          this.baseCurrency,
+          this.quoteCurrency,
+          "book",
+          "total",
+          defaultDigits
+        )
+      ).toNumber();
     },
     amountDigits: function() {
       const defaultDigits = this.asset_is_custom ? this.quote_digits : 2;
-      return new BigNumber(this.getPairConfig(
-        this.baseCurrency,
-        this.quoteCurrency,
-        "book",
-        "amount",
-        defaultDigits
-      )).toNumber();
+      return new BigNumber(
+        this.getPairConfig(
+          this.baseCurrency,
+          this.quoteCurrency,
+          "book",
+          "amount",
+          defaultDigits
+        )
+      ).toNumber();
     },
     couldCreateTrade: function() {
       if (
@@ -445,10 +485,10 @@ export default {
       // if (this.confirmForm) return false; //弹窗打开时不允许创建
       if (!this.fee.length) return false;
       let result;
-      const balance = new BigNumber(this.balances)
-      const amount = new BigNumber(this.amount)
-      const feeAmount = new BigNumber(this.fee[0].amount)
-      const total = new BigNumber(this.total)
+      const balance = new BigNumber(this.balances);
+      const amount = new BigNumber(this.amount);
+      const feeAmount = new BigNumber(this.fee[0].amount);
+      const total = new BigNumber(this.total);
       if (this.isBuy) {
         let asset_id = this.getCoinId(this.baseCurrency);
         // 买单 查看total和balance的关系
@@ -461,8 +501,7 @@ export default {
           (this.baseCurrency === "CYB" || this.fee[0].asset_id !== "1.3.0")
         ) {
           // @see http://mikemcl.github.io/bignumber.js/#cmp
-          const compare =
-            balance.minus(feeAmount).comparedTo(total);
+          const compare = balance.minus(feeAmount).comparedTo(total);
           result = compare !== null && compare >= 0;
         }
       } else {
@@ -473,8 +512,7 @@ export default {
           result &&
           (this.quoteCurrency === "CYB" || this.fee[0].asset_id !== "1.3.0")
         ) {
-          const compare =
-            balance.minus(feeAmount).comparedTo(amount);
+          const compare = balance.minus(feeAmount).comparedTo(amount);
           result = compare !== null && compare >= 0;
         }
       }
@@ -498,7 +536,7 @@ export default {
     document.removeEventListener("visibilitychange", this.bindIntervalEvent);
   },
   methods: {
-    async bindIntervalEvent (){
+    async bindIntervalEvent() {
       if (document.visibilityState == "hidden") {
         this.removeInterval();
       } else if (document.visibilityState == "visible") {
@@ -509,12 +547,21 @@ export default {
       clearInterval(this.intervalGetBalance);
       this.intervalGetBalance = null;
     },
+
+    async getAccountBalance() {
+      const hash = this.isBuy
+        ? CybexDotClient.baseTokenHash
+        : CybexDotClient.quoteTokenHash;
+      const balance = await CybexDotClient.getBalance(hash);
+      console.log("balance: ", balance);
+      this.balances = balance.freeBalance;
+    },
     async initBalanceAndFee() {
       let func = async () => {
         await this.getCybAmount();
         return Promise.all([
           await this.calcFee(),
-          await this.getBalances()
+          await this.getAccountBalance()
         ]).then(() => {
           // console.log('init balance and fee');
         });
@@ -555,10 +602,10 @@ export default {
     validUserInput(type, $event) {
       // 不出现科学计数法
       let correctVal = $event.target.value;
-      let maxDp = this[type +'Digits'] ?  this[type +'Digits'] : 2;
+      let maxDp = this[type + "Digits"] ? this[type + "Digits"] : 2;
       correctVal = this.toNonExponential($event.target.value, maxDp);
       if (isNaN(correctVal)) {
-        correctVal = '';
+        correctVal = "";
       }
       // 重新赋值
       this.$set(this, type, correctVal);
@@ -571,7 +618,7 @@ export default {
       let p = await this.cybexjs.assetValue(
         this.base_id,
         this.price,
-        this.locale == "en" ? this.prefix + "USDT" : null,
+        this.locale == "en" ? this.prefix + "USDT" : null
       );
       this.legalPrice = this.$options.filters.legalDigits(p, this.symbol);
     },
@@ -591,7 +638,9 @@ export default {
         } else if (this.isNumberValue(this.price) && this.price != 0) {
           const total = new BigNumber(this.total);
           const price = new BigNumber(this.price);
-          this.amount = total.dividedBy(price).toFixed(this.amountDigits, BigNumber.ROUND_FLOOR);
+          this.amount = total
+            .dividedBy(price)
+            .toFixed(this.amountDigits, BigNumber.ROUND_FLOOR);
         } else {
           this.amount = null;
         }
@@ -600,7 +649,9 @@ export default {
           const amount = new BigNumber(this.amount);
           const price = new BigNumber(this.price);
           // console.log('updated price', price, this.price);
-          this.total = amount.multipliedBy(price).toFixed(this.totalDigits, BigNumber.ROUND_CEIL);
+          this.total = amount
+            .multipliedBy(price)
+            .toFixed(this.totalDigits, BigNumber.ROUND_CEIL);
         } else {
           this.total = null;
         }
@@ -629,7 +680,9 @@ export default {
     },
     beforeCreateTrade() {
       // 强制显示精度
-      this.price = this.$options.filters.shortenPrice(parseFloat(this.price).toFixed(this.priceDigits));
+      this.price = this.$options.filters.shortenPrice(
+        parseFloat(this.price).toFixed(this.priceDigits)
+      );
       this.amount = parseFloat(this.amount).toFixed(this.amountDigits);
       this.total = parseFloat(this.total).toFixed(this.totalDigits);
       // 检查用户是否已锁
@@ -643,7 +696,10 @@ export default {
       }
     },
     async clickCreateTrade() {
-      this.$eventHandle(this.createTrade, [], {user: true, server: false})
+      this.$eventHandle(this.createLimitOrder, [], {
+        user: true,
+        server: false
+      })
         .then(() => {
           this.$message({
             message: this.$t("message.order_pended"),
@@ -657,12 +713,37 @@ export default {
               type: "error"
             });
           }
-        }).finally(() => {
+        })
+        .finally(() => {
           // 防止弹窗开着的情况下确认下单按钮变量
           setTimeout(() => {
             this.couldConfirmCreateTrade = true;
           }, 3000);
         });
+    },
+
+    async createLimitOrder() {
+      if (!this.validateForm()) return false;
+      this.isCreatingTrade = true;
+      this.couldConfirmCreateTrade = false;
+      const side = this.isBuy ? "buy" : "sell";
+      const base_id = this.base_id;
+      const quote_id = this.quote_id;
+
+      const result = await CybexDotClient.createLimitOrder(
+        CybexDotClient.TradePairHash,
+        this.isBuy,
+        this.price,
+        this.amount
+      );
+      if (result !== null) {
+        this.$emit("create-trade-success");
+        this.$message({
+          message: "Order Pended",
+          type: "success"
+        });
+      }
+      this.confirmForm = false;
     },
     // 创建订单
     async createTrade() {
@@ -733,7 +814,9 @@ export default {
         }
         // 按照amount精度向下取整
         // console.log('amount',  amount, this.amountDigits);
-        amount = amount.isGreaterThan(0) ? amount.toFixed(this.amountDigits, BigNumber.ROUND_FLOOR) : 0;
+        amount = amount.isGreaterThan(0)
+          ? amount.toFixed(this.amountDigits, BigNumber.ROUND_FLOOR)
+          : 0;
         this.amount = amount;
         this.recalculateForm("amount", amount);
       }
@@ -743,12 +826,21 @@ export default {
     },
     getStep(key) {
       let defaultVal;
-      if (key == 'price_step') {
-        defaultVal = this.toNonExponential(Math.pow(10, 0 - this.priceDigits), this.priceDigits);
-      } else if (key == 'amount_step') {
-        defaultVal = this.toNonExponential(Math.pow(10, 0 - this.amountDigits), this.amountDigits);
-      } else if (key == 'total_step') {
-        defaultVal = this.toNonExponential(Math.pow(10, 0 - this.totalDigits), this.totalDigits);
+      if (key == "price_step") {
+        defaultVal = this.toNonExponential(
+          Math.pow(10, 0 - this.priceDigits),
+          this.priceDigits
+        );
+      } else if (key == "amount_step") {
+        defaultVal = this.toNonExponential(
+          Math.pow(10, 0 - this.amountDigits),
+          this.amountDigits
+        );
+      } else if (key == "total_step") {
+        defaultVal = this.toNonExponential(
+          Math.pow(10, 0 - this.totalDigits),
+          this.totalDigits
+        );
       }
       return this.getPairConfig(
         this.baseCurrency,
@@ -795,9 +887,7 @@ export default {
     // 钱包余额
     async getBalances() {
       if (!this.coinsInvert || !this.username) return;
-      let asset_id = this.getCoinId(
-        this.isBuy ? this.base_id : this.quote_id
-      );
+      let asset_id = this.getCoinId(this.isBuy ? this.base_id : this.quote_id);
       // console.log(">>> 查询余额 param", this.username, asset_id);
       // t1 链上数量 转化为实际数量 t2
       let t1 = await this.cybexjs.balances(this.username, asset_id);
@@ -833,9 +923,11 @@ export default {
 .cybex-tips {
   max-width: 262px;
 }
+
 .t1 {
   // min-width: 45%;
 }
+
 // 覆写vuetify text-field solo样式
 // 用于交易所页面的表单
 .exchange-block-container {
@@ -887,6 +979,7 @@ form {
     .b-half {
       max-width: 131px;
     }
+
     .money {
       margin-left: 4px;
       color: $main.grey;
@@ -899,10 +992,12 @@ form {
         padding-left: 2px;
       }
     }
+
     .desc {
       font-size: 16px;
       line-height: 0.5;
     }
+
     .legal-tender {
       margin: 6px 0 3px;
       min-height: 12px;
