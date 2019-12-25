@@ -15,13 +15,18 @@ const filters = {
     const local = moment.utc(d).toDate();
     return moment(local).format(f);
   },
+  localDate: (d, f) => {
+    const local = moment.utc(d).local();
+
+    return local.format(f);
+  },
   coinName: (id, coinMap) => {
     return coinMap && coinMap[id] ? coinMap[id].replace(coinPreg, '') : id;
   },
   /**
-   * TODO: 
-   * @param {*} value 
-   * @param {*} precision 
+   * TODO:
+   * @param {*} value
+   * @param {*} precision
    */
   shortenVolume(value, precision) {
     value = parseFloat(value)
@@ -44,7 +49,7 @@ const filters = {
   },
   /**
    * 限制价格显示字节长度
-   * @param {Number | String} value 
+   * @param {Number | String} value
    * @param {Number} maxPrecision
    */
   shortenPrice(value, maxPrecision = 10) {
@@ -65,10 +70,10 @@ const filters = {
    * 1.234 | floorDigits(2, '', '-')  // 输出1.23
    * '' | floorDigits(2, '', '-')     // 输出 -
    * null | floorDigits(2, null, '')  // 输出 ''
-   * @param {*} val 
-   * @param {*} digit 
-   * @param {*} emptyVal 
-   * @param {*} emptySymbol 
+   * @param {*} val
+   * @param {*} digit
+   * @param {*} emptyVal
+   * @param {*} emptySymbol
    */
   floorDigits(val, digit, emptyVal, emptySymbol) {
     if (typeof emptyVal !== undefined && val === emptyVal)
@@ -83,10 +88,10 @@ const filters = {
   * 1.234 | floorDigits(2, '', '-')  // 输出1.24
   * '' | floorDigits(2, '', '-')     // 输出 -
   * null | floorDigits(2, null, '')  // 输出 ''
-  * @param {*} val 
-  * @param {*} digit 
-  * @param {*} emptyVal 
-  * @param {*} emptySymbol 
+  * @param {*} val
+  * @param {*} digit
+  * @param {*} emptyVal
+  * @param {*} emptySymbol
   */
   ceilDigits(val, digit, emptyVal, emptySymbol) {
     if (typeof emptyVal !== undefined && val === emptyVal)
@@ -101,17 +106,17 @@ const filters = {
    * 1.234 | roundDigits(2, '', '-')  // 输出1.23
    * '' | roundDigits(2, '', '-')     // 输出 -
    * null | roundDigits(2, null, '')  // 输出 ''
-   * @param {*} val 
-   * @param {*} digit 
-   * @param {*} emptyVal 
-   * @param {*} emptySymbol 
+   * @param {*} val
+   * @param {*} digit
+   * @param {*} emptyVal
+   * @param {*} emptySymbol
    */
   roundDigits(val, digit, emptyVal, emptySymbol) {
     if (typeof emptyVal !== undefined && val === emptyVal) {
       return typeof emptySymbol !== undefined ? emptySymbol : '-'
     } else {
       return round(val, digit).toFixed(digit);
-    } 
+    }
   },
   /**
    * 法币精度显示
@@ -142,8 +147,8 @@ const filters = {
   /**
    * 数值小于最小精度时的显示
    * 如精度为1, 值为0.0001, 显示为 < 1
-   * @param {*} val 
-   * @param {*} digits 
+   * @param {*} val
+   * @param {*} digits
    */
   avoidMinAmount(val, digits) {
     let value = new BigNumber(val);

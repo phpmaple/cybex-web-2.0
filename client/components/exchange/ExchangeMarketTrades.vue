@@ -13,11 +13,11 @@
               class="price"
               @click="$emit('set-form-price', {price: parseFloat(trade.price).toFixed(digitsPrice)})"
               :class="{
-                'c-buy': trade.tradetype == 'buy', 
+                'c-buy': trade.tradetype == 'buy',
                 'c-sell': trade.tradetype =='sell'}"
             >{{ trade.price | roundDigits(digitsPrice) | shortenPrice }}</span>
             <span class="amount">{{ trade.quote | roundDigits(digitsAmount) | avoidMinAmount(digitsAmount) }}</span>
-            <span class="time c-white-30">{{ trade.time | date('HH:mm:ss') }}</span>
+            <span class="time c-white-30">{{ trade.time | localDate('HH:mm:ss') }}</span>
           </div>
         </perfect-scrollbar>
       </div>
@@ -28,6 +28,7 @@
 <script>
 import utils from "~/components/mixins/utils";
 import { mapGetters } from "vuex";
+import CybexDotClient from "~/components/exchange/CybexDotClient";
 
 export default {
   watch: {
@@ -84,7 +85,7 @@ export default {
     },
     async initData() {
         // 动态获取最新交易信息
-      this.$eventHandle(this.fetchMarketTrades, [
+      this.$eventHandle(this.fetchSubstrateMarketTrades, [
         this.base_id,
         this.quote_id
       ]).then(() => {
@@ -108,6 +109,30 @@ export default {
     //     this.currentOrderPrice
     //   );
     // },
+    async fetchSubstrateMarketTrades() {
+      let func = async () => {
+        const trades = await CybexDotClient.getTrades(
+          CybexDotClient.TradePairHash,
+        );
+  
+        this.trades = trades.map(t => {
+          return {
+            tradetype: t.otype == 0 ? "buy" : "sell",
+            price: t.price / 10 ** 8,
+            quote: t.quote_amount,
+            time: t.datetime
+          }
+        });
+      }
+      await func();
+      // console.log(">>>>>> Market Trades 实时交易数据", this.trades);
+      if (!this.intervalMarketTrade) {
+        this.intervalMarketTrade = setInterval(async function() {
+          await func();
+        }, this.tradesRefreshRate);
+      }
+    },
+
     async fetchMarketTrades(base, quote) {
       let func = async () => {
         let row = 50;

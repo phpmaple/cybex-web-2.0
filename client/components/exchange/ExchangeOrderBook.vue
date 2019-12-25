@@ -3,13 +3,13 @@
     <v-flex class="exchange-block-title" d-flex justify-space-between>
       <v-flex d-flex class="order-choosen">
         <!-- 切换图标 -->
-        <span class="ic-all-orders" :class="{active: order == 'all'}" @click="changeFilter('all')"/>
+        <span class="ic-all-orders" :class="{active: order == 'all'}" @click="changeFilter('all')" />
         <span
           class="ic-sell-orders"
           :class="{active: order == 'sell'}"
           @click="changeFilter('sell')"
         />
-        <span class="ic-buy-orders" :class="{active: order == 'buy'}" @click="changeFilter('buy')"/>
+        <span class="ic-buy-orders" :class="{active: order == 'buy'}" @click="changeFilter('buy')" />
       </v-flex>
       <!-- 选择深度下拉菜单 -->
       <v-flex class="group-order c-white-30">
@@ -87,7 +87,7 @@
           class="info-row total"
           @click="changePrice(row, i, 'sell')"
         >{{ row.total | roundDigits(digitsTotal, null, '--') }}</span>
-        <span class="groups-value sell" :style="{width: row.perc + '%'}"/>
+        <span class="groups-value sell" :style="{width: row.perc + '%'}" />
       </v-flex>
     </v-flex>
     <!-- 当前价格 -->
@@ -102,13 +102,13 @@
           v-if="currentIsUp === true"
           class="ic-arrow_up"
         />
-        <span v-if="currentIsUp === false" class="ic-arrow_drop_down"/>
+        <span v-if="currentIsUp === false" class="ic-arrow_drop_down" />
       </span>
       <span
         class="current-amount c-highlight"
         v-if="currentOrderLegalPrice !== null"
       >{{ currentOrderLegalPrice | legalDigits(legalSymbol) }}</span>
-      <span class="total"/>
+      <span class="total" />
       <!-- 网络状态 -->
       <v-tooltip :nudge-top="8" :content-class="'status-tips'" class="netstatus pt-0" right top>
         <span slot="activator">
@@ -116,28 +116,28 @@
             v-if="currentNetStatus == 'error'"
             src="~assets/svg/ic-signal-error.svg"
             :alt="currentNetStatus"
-          >
+          />
           <img
             v-else-if="currentNetStatus == 'warning' "
             src="~assets/svg/ic-signal.svg"
             :alt="currentNetStatus"
-          >
+          />
           <img
             v-else-if="currentNetStatus == 'normal'"
             src="~assets/svg/ic-signal-normal.svg"
             :alt="currentNetStatus"
-          >
+          />
         </span>
         <div>
           <div class="status-tips-item">
-            <span class="s-icon" :class="{delay: !netstatus.market}"/>
+            <span class="s-icon" :class="{delay: !netstatus.market}" />
             <span class="s-name">{{ $t('exchange.netstatus-market') }}</span>
             <span
               class="s-status"
             >{{ netstatus.market ? $t('exchange.netstatus-ok') : $t('exchange.netstatus-delay') }}</span>
           </div>
           <div class="status-tips-item">
-            <span class="s-icon" :class="{delay: !netstatus.history}"/>
+            <span class="s-icon" :class="{delay: !netstatus.history}" />
             <span class="s-name">{{ $t('exchange.netstatus-history') }}</span>
             <span
               class="s-status"
@@ -165,7 +165,7 @@
           class="info-row total"
           @click="changePrice(row, i, 'buy')"
         >{{ row.total | roundDigits( digitsTotal, null, '--') }}</span>
-        <span class="groups-value buy" :style="{width: row.perc + '%'}"/>
+        <span class="groups-value buy" :style="{width: row.perc + '%'}" />
       </v-flex>
     </v-flex>
   </v-flex>
@@ -174,6 +174,8 @@
 <script>
 import { mapGetters } from "vuex";
 import utils from "~/components/mixins/utils";
+import CybexDotClient from "~/components/exchange/CybexDotClient";
+
 import { reverse, max, maxBy, concat, take, takeRight, zipWith } from "lodash";
 
 export default {
@@ -307,7 +309,7 @@ export default {
       let min;
       if (maxVal >= 3) {
         min = maxVal - 4 + 1;
-      // for PCX 临时挖矿设置
+        // for PCX 临时挖矿设置
       } else if (maxVal == 1) {
         (maxVal = 1), (min = 0);
       } else {
@@ -329,7 +331,7 @@ export default {
     },
     async initRTEData() {
       this.removeInterval();
-      this.$eventHandle(this.getRTEDataByDigits)
+      this.$eventHandle(this.getOrderBookByDigits)
         .then(() => {
           this.$store.commit("exchange/SET_MDP_CONNECT_STATUS", true);
         })
@@ -349,7 +351,7 @@ export default {
             let h = Math.floor(this.rowsFullHeight / 2);
             let marginTop = Math.ceil(h - this.rteRows * this.rowHeight);
             let height = this.rteRows * this.rowHeight;
-            this.$refs.sellRows.style = `height: ${height}px; margin-top: ${marginTop}px;`
+            this.$refs.sellRows.style = `height: ${height}px; margin-top: ${marginTop}px;`;
           }
         });
       } else if (this.order == "sell") {
@@ -360,7 +362,9 @@ export default {
           }
           // console.log('this.$refs.sellRows', this.$refs.sellRows);
           if (this.$refs.sellRows) {
-            let marginTop = Math.floor(this.rowsFullHeight - this.rteRows * this.rowHeight);
+            let marginTop = Math.floor(
+              this.rowsFullHeight - this.rteRows * this.rowHeight
+            );
             let height = this.rteRows * this.rowHeight;
             if (this.rowsFullHeight - height < 0) {
               height = this.rowsFullHeight;
@@ -389,6 +393,44 @@ export default {
       }
     },
     // 请求RTE数据
+    async getOrderBookByDigits() {
+      let func = async () => {
+        const ticker = await CybexDotClient.getTicker(
+          CybexDotClient.TradePairHash
+        );
+        this.$store.commit("exchange/SET_CURRENT_RTE_PRICE", {
+          price: ticker.latest_matched_price / 10 ** 8,
+          legalPrice: null
+        });
+
+        const orderBook = await CybexDotClient.getOrderBook(
+          CybexDotClient.TradePairHash
+        );
+
+        this.orderSellRows = orderBook[0].map(o => {
+          return {
+            price: o.price / 10 ** 8,
+            amount: o.sell_amount,
+            total: o.buy_amount
+          };
+        });
+        this.orderBuyRows = orderBook[1].map(o => {
+          return {
+            price: o.price / 10 ** 8,
+            amount: o.buy_amount,
+            total: o.sell_amount
+          };
+        });
+      };
+
+      await func();
+      if (!this.intervalRTE) {
+        this.intervalRTE = setInterval(async () => {
+          await func();
+        }, 500);
+      }
+    },
+
     async getRTEDataByDigits() {
       if (!(this.base_id && this.quote_id)) {
         return;
@@ -583,7 +625,7 @@ export default {
       }
     }
   },
-  mounted() {
+  async mounted() {
     // 计算下拉菜单
     this.getDigitsDropdown();
     this.changeFilter("all");
@@ -779,10 +821,9 @@ export default {
   line-height: 1.67;
   overflow-y: hidden;
   transition: height 0.2s, opacity 0.1s;
-  
 
   &.sell-rows {
-    padding-top: 2px; 
+    padding-top: 2px;
   }
 
   &:not(.close) {
