@@ -9,8 +9,8 @@ import {
 } from '~/lib/utils'
 
 const TradePairHash = "0xcaaeddaf99a21515939a2389c415ff374262b4f7bd574ad65d1c51326ca4e999";
-const quoteTokenHash = "0xa4aa6a221e9a57b2f0d8fc3208ae14b190e7ac56f5c0b31f26ca77844d377ca2";
-const baseTokenHash = "0x861611069fb081b9a36a94ccbbac088a7d482a0d8ba9853bcdb9c954f14cf254";
+const quoteTokenHash = "0xa4aa6a221e9a57b2f0d8fc3208ae14b190e7ac56f5c0b31f26ca77844d377ca2"; // 1.3.0
+const baseTokenHash = "0x861611069fb081b9a36a94ccbbac088a7d482a0d8ba9853bcdb9c954f14cf254"; // 1.3.27
 const AccountId = "5DAAnrj7VHTznn2AWBemMuyBwZWs6FNFjdyVXUeYum3PTXFy";
 
 let api;

@@ -264,7 +264,7 @@
           </td>
           <td
             class="text-xs-left text-uppercase"
-            :class="{ 
+            :class="{
               'c-buy': props.item.tradetype == 'buy',
               'c-sell': props.item.tradetype == 'sell'}"
           >{{ $t('exchange.content.' + props.item.tradetype.toLowerCase()) }}</td>
@@ -315,6 +315,8 @@ import utils from "~/components/mixins/utils";
 import { last } from "lodash";
 import moment from "moment";
 import PerfectScrollbar from "perfect-scrollbar";
+import CybexDotClient from "~/components/exchange/CybexDotClient";
+
 import {
   isEqual,
   differenceWith,
@@ -491,7 +493,7 @@ export default {
           quote_id: v ? v.quote_id : null
         });
       }
-      await this.$eventHandle(this.fetchTradeHistory, ["", true]);
+      await this.$eventHandle(this.fetchTrades, ["", true]);
     }
   },
   methods: {
@@ -511,7 +513,7 @@ export default {
       let times = 3,
         stop = false;
       while (times > 0 && !stop) {
-        await this.$eventHandle(this.fetchTradeHistory, ["", true])
+        await this.$eventHandle(this.fetchTrades, ["", true])
           .then(() => {
             times = 0;
             stop = true;
@@ -525,7 +527,7 @@ export default {
               tradeConnect: false
             });
             times--;
-            this.$eventHandle(this.fetchTradeHistory, ["", true]);
+            this.$eventHandle(this.fetchTrades, ["", true]);
           });
         if (times !== 0) {
           this.$store.commit("exchange/SET_CONNECT_STATUS", {
@@ -554,7 +556,7 @@ export default {
             this.staticDigits[k2] = r.precision;
           }
           // base quote的默认资产精度
-          // 根据买卖方向选择不同 
+          // 根据买卖方向选择不同
           rows[idx]["asset_digit_base"] = this.staticDigits[k];
           rows[idx]["asset_digit_quote"] = this.staticDigits[k2];
            // price精度
@@ -587,7 +589,7 @@ export default {
         item && item.market
           ? this.coinName(item.market.quote, this.coinMap)
           : this.quoteCurrency;
-      const defaultDigits = this.isCustomPair(item.market.base, item.market.quote) ? item.asset_digit_quote : 5; 
+      const defaultDigits = this.isCustomPair(item.market.base, item.market.quote) ? item.asset_digit_quote : 5;
       return this.getPairConfig(base, quote, "book", "amount", defaultDigits);
     },
     onScroll(event) {
@@ -629,7 +631,7 @@ export default {
         );
         this.currentFilter = Object.assign({}, filter);
       }
-      this.fetchTradeHistory(date, true);
+      this.fetchTrades(date, true);
     },
     /**
      * @argument date string 可用值 '' | day | week | month | 3 months
@@ -753,6 +755,94 @@ export default {
       this.delaySetLoading(0);
       this.nextpage = false;
     },
+
+    async fetchTrades(date, showLoading = false) {
+      const func = async (d, show) => {
+        this.loadAll = true;
+        this.page = 0;
+
+        if (!this.username) {
+          this.delaySetLoading(0);
+          return;
+        }
+        let filter;
+        if (!this.currentFilter) {
+          filter = Object.assign({}, this.filter, this.calcFilterByDate(d));
+          // 第一次请求, 减少交易所页面请求压力，不传start end
+          if (this.mode === "exchange") {
+            filter.start = null;
+            filter.end = null;
+          }
+          this.currentFilter = Object.assign({}, filter);
+        } else {
+          filter = this.currentFilter;
+        }
+        // trade history
+        if (show) {
+          this.isLoading = true;
+        }
+        // console.log('fetch trade history', this.username,
+        //   filter.start,
+        //   filter.end,
+        //   this.page,
+        //   this.limit,
+        //   filter.base_id,
+        //   filter.quote_id,
+        //   filter.white_flag)
+
+        let tradeRows = await CybexDotClient.getTrades(CybexDotClient.TradePairHash, CybexDotClient.AccountId);
+
+        if (this.rowsData.length) {
+          let diff = differenceWith(this.rowsData, tradeRows, isEqual);
+          if (diff.length > 1) {
+            console.log("你有" + diff.length + "笔新的委托记录");
+          }
+        }
+        tradeRows = tradeRows.map(v => {
+          return {
+            time: v.datetime,
+            tradetype: v.otype === 0 ? "buy" : "sell",
+            price: v.price / 10 ** 8,
+            base_amount: v.base_amount,
+            quote_amount: v.quote_amount,
+            fee: {
+              amount: 0,
+              asset_id: "1.3.0"
+            },
+            market: {
+              base: v.base === CybexDotClient.baseTokenHash ? "1.3.27" : v.base,
+              quote: v.quote === CybexDotClient.quoteTokenHash ? "1.3.0" : v.quote
+            }
+          };
+        });
+
+        this.rowsData = tradeRows ? tradeRows : [];
+        // console.log(this.rowsData);
+
+        this.$nextTick(() => {
+          this.delaySetLoading();
+        });
+      };
+
+      await func(date, showLoading);
+      // 检查是否定期更新数据
+      if (!this.intervalRefresh && this.mode == "exchange") {
+        this.intervalRefresh = setInterval(async () => {
+          // 只有最后时间为当天, 且没有翻页过的时候才读取数据
+          if (!this.currentFilter) return;
+          const filterEnd = moment(this.currentFilter.end).format("YYYY-MM-DD");
+          const today = moment().format("YYYY-MM-DD");
+          if (
+            this.page == 0 &&
+            (this.currentFilter.end === null || filterEnd == today)
+          ) {
+            await func(date, false);
+          }
+        }, this.refreshRate);
+      }
+
+    },
+
     // 初次获取 trade order 数据
     async fetchTradeHistory(date, showLoading = false) {
       const func = async (d, show) => {
@@ -798,7 +888,7 @@ export default {
         );
          // 预处理精度
         await this.mapRowAssetDigits(tradeRows);
-        // console.log(tradeRows);
+        console.log(tradeRows);
         if (this.rowsData.length) {
           let diff = differenceWith(this.rowsData, tradeRows, isEqual);
           if (diff.length > 1) {
@@ -944,7 +1034,7 @@ export default {
             ? this.selectedPair.quote_id
             : null,
         white_flag:
-          this.whiteFlag    
+          this.whiteFlag
       });
     }
   },
