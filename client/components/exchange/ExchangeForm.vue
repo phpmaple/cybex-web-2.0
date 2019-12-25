@@ -553,7 +553,7 @@ export default {
         ? CybexDotClient.baseTokenHash
         : CybexDotClient.quoteTokenHash;
       const balance = await CybexDotClient.getBalance(hash);
-      console.log("balance: ", balance);
+      // console.log("balance: ", balance);
       this.balances = balance.freeBalance;
     },
     async initBalanceAndFee() {

@@ -281,10 +281,44 @@ export default {
         });
 
       // 获取24小时交易信息
-      this.$eventHandle(this.loadActivity, [this.base_id, this.quote_id])
+      this.$eventHandle(this.loadTicker, [this.base_id, this.quote_id])
         .then(console.log(">>> 初始化24小时交易信息"))
         .catch(e => {});
     },
+
+    async loadTicker() {
+       let func = async () => {
+        // 24小时数据
+        const ticker = await CybexDotClient.getTicker(CybexDotClient.TradePairHash);
+        this.activityData = {
+          latest: ticker.latest_matched_price / 10 ** 8,
+          low: ticker.one_day_lowest_price / 10 ** 8,
+          high: ticker.one_day_highest_price / 10 ** 8,
+          base_volume: ticker.one_day_trade_volume
+        };
+      };
+
+      await func();
+
+      // form price只需要初始化第一次 其余由用户自己交互
+      let price = this.activityData.latest;
+      let newData = {
+        buyPrice: price,
+        sellPrice: price,
+        autoSet: true
+      };
+      this.formData = Object.assign({}, this.formData, newData);
+
+      console.log(">>>>>> Activity 24小时动态数据", this.activityData);
+      console.log(">>>>>> formData", this.formData);
+
+      if (!this.intervalActivity) {
+        this.intervalActivity = setInterval(async function() {
+          await func();
+        }, this.tradesRefreshRate);
+      }
+    },
+
     async loadActivity(base, quote) {
       let func = async () => {
         // 24小时数据
@@ -300,6 +334,7 @@ export default {
       };
       await func();
       await lowHigh();
+
       // form price只需要初始化第一次 其余由用户自己交互
       let price = this.activityData.latest;
       let newData = {
@@ -308,7 +343,10 @@ export default {
         autoSet: true
       };
       this.formData = Object.assign({}, this.formData, newData);
-      // console.log(">>>>>> Activity 24小时动态数据", this.activityData);
+
+      console.log(">>>>>> Activity 24小时动态数据", this.activityData);
+      console.log(">>>>>> formData", this.formData);
+
       if (!this.intervalActivity) {
         this.intervalActivity = setInterval(async function() {
           await func();

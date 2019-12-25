@@ -76,6 +76,7 @@ async function getTrades(pairHash, accountId) {
 
 async function getTicker(pairHash) {
   const result = await axios.get(`${config.cybexDotExplorerApiServer}ticker/${pairHash}`);
+
   if (result.status === 200) {
     return result.data;
   } else {
