@@ -11,6 +11,7 @@
 // };
 import moment from "moment-timezone";
 import { invert, values } from "lodash";
+import CybexDotClient from "~/components/exchange/CybexDotClient";
 
 export function convertResolutionByValue(value, source) {
   let search = invert(source);
@@ -26,6 +27,7 @@ export async function getHistoryData(loader, base_id, quote_id, bucket_seconds, 
     requestStartDate,
     requestEndDate
   );
+  console.log(barsData.length);
   barsData.forEach(data => {
     let time = moment.utc(data.key.open).valueOf();
     bars.push({
@@ -39,6 +41,28 @@ export async function getHistoryData(loader, base_id, quote_id, bucket_seconds, 
   });
   return bars;
 }
+
+export async function getHistoryData2(loader, base_id, quote_id, bucket_seconds, requestStartDate, requestEndDate) {
+  let bars = [];
+
+  let barsData = await CybexDotClient.getMarket(
+    CybexDotClient.TradePairHash,
+    bucket_seconds,
+    requestEndDate
+  );
+  barsData.forEach(data => {
+    bars.push({
+      time: data.time,
+      close: data.close / 10 ** 8,
+      open: data.open / 10 ** 8,
+      high: data.high / 10 ** 8,
+      low: data.low / 10 ** 8,
+      volume: parseFloat(data.volume)
+    });
+  });
+  return bars;
+}
+
 
 export class Datafeed {
   cybexjs;
@@ -97,7 +121,7 @@ export class Datafeed {
       has_intraday: true,
       has_seconds: true,
       has_no_volume: false,
-      intraday_multipliers: values(this.resolution), 
+      intraday_multipliers: values(this.resolution),
       seconds_multipliers: values(this.resolution),
       supported_resolution: values(this.resolution),
       volume_precision: 8,
@@ -133,9 +157,10 @@ export class Datafeed {
     let end = moment
       .unix(endDate)
       .utc()
-      .format(this.dateXHRFormat);
+      .format("YYYY-MM-DDTHH:mm:ss.SSS") + "Z";
     try {
-      this.bars = await getHistoryData(this.cybexjs, this.base_id, this.quote_id, bucket_seconds, start, end);
+      this.bars = await getHistoryData2(this.cybexjs, this.base_id, this.quote_id, bucket_seconds, start, end);
+
       if (this.bars.length) {
         this.lastBar = this.bars[this.bars.length - 1];
         onHistoryCallback(this.bars, { noData: false });
@@ -161,8 +186,8 @@ export class Datafeed {
         .format(this.dateXHRFormat);
       let end = moment()
         .utc()
-        .format(this.dateXHRFormat);
-      let bars = await getHistoryData(this.cybexjs, this.base_id, this.quote_id, bucket_seconds, start, end);
+        .format("YYYY-MM-DDTHH:mm:ss.SSS") + "Z";
+      let bars = await getHistoryData2(this.cybexjs, this.base_id, this.quote_id, bucket_seconds, start, end);
       if (bars.length) {
         let newLastBar = bars[bars.length - 1];
         this.lastBar = newLastBar;
@@ -176,7 +201,7 @@ export class Datafeed {
         await requestNewBar();
       }, 3000)
     }
- 
+
     /**
      *  @param bar object{time, close, open, high, low, volume}
      */

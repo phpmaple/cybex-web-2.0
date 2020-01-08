@@ -62,7 +62,7 @@
               >{{ $t('exchange.content.' + props.item.tradetype.toLowerCase()) }}</td>
               <td
                 class="text-xs-center"
-              >{{ props.item.price | floorDigits(props.item.asset_digit_price) | shortenPrice }}</td>
+              >{{ props.item.price }}</td>
               <td
                 class="text-xs-center"
               >{{ props.item.amount | floorDigits(props.item.asset_digit_amount) }}</td>
@@ -77,7 +77,7 @@
               >{{ $t('exchange.content.' + props.item.tradetype.toLowerCase()) }}</td>
               <td
                 class="text-xs-center"
-              >{{ props.item.price | ceilDigits(props.item.asset_digit_price) | shortenPrice }}</td>
+              >{{ props.item.price }}</td>
               <td
                 class="text-xs-center"
               >{{ props.item.amount | ceilDigits(props.item.asset_digit_amount) }}</td>
@@ -157,6 +157,7 @@ import { mapGetters } from "vuex";
 import { values, map, filter, find, isEqual, isEqualWith, reverse } from 'lodash';
 import utils from "~/components/mixins/utils";
 import config from "~/lib/config/config.js";
+import CybexDotClient from "~/components/exchange/CybexDotClient";
 
 export default {
   props: {
@@ -294,7 +295,7 @@ export default {
     orderFilter: function(filter) {
       let tryTimes = 5;
       this.currentFilter = Object.assign(this.currentFilter, filter);
-      this.$eventHandle(() => this.fetchOrderHistory(true, true))
+      this.$eventHandle(() => this.fetchOrderHistory2(true, true))
         .then(() => {
           tryTimes = 0;
         })
@@ -463,7 +464,7 @@ export default {
           : this.quoteCurrency;
        const defaultDigits = this.isCustomPair(item.market.base, item.market.quote)
         ? item.asset_digit_base
-        : 5;    
+        : 5;
       return this.getPairConfig(base, quote, "book", "total", defaultDigits);
     },
     confirmCancelAllOrder: function() {
@@ -522,7 +523,7 @@ export default {
       if (this.cancelIds) {
         return Promise.all(
           this.cancelIds.map(async id => {
-            let result = await this.cybexjs.cancel_order(id);
+            let result = await CybexDotClient.cancelLimitOrder(id);
           })
         );
       }
@@ -532,7 +533,7 @@ export default {
         stop = false;
       while (times > 0 && !stop) {
         await this.$eventHandle(() =>
-          this.fetchOrderHistory(cleanRows, showLoading)
+          this.fetchOrderHistory2(cleanRows, showLoading)
         )
           .then(() => {
             stop = true;
@@ -542,7 +543,7 @@ export default {
             console.log("network error, requesting again");
             times--;
             this.$eventHandle(() =>
-              this.fetchOrderHistory(cleanRows, showLoading)
+              this.fetchOrderHistory2(cleanRows, showLoading)
             );
           });
       }
@@ -554,6 +555,55 @@ export default {
         this.$store.commit("exchange/SET_CONNECT_STATUS", {
           orderConnect: true
         });
+      }
+    },
+    async fetchOrderHistory2(cleanRows = true, showLoading = false) {
+      if (!this.username) {
+        this.rowsData = [];
+        this.isLoading = false;
+        return;
+      }
+
+      let func = async (needCleanData = false, needShowLoading = false) => {
+        if (needCleanData) {
+          this.rowsData = [];
+        }
+        if (needShowLoading) {
+          this.isLoading = true;
+        }
+        // open orders
+        // console.log('this.currentFilter', this.currentFilter);
+
+        let openRows = await CybexDotClient.getOrders(
+          CybexDotClient.TradePairHash,
+          CybexDotClient.AccountId,
+          true
+        );
+
+        console.log('open rows', this.enableInterval, openRows);
+        this.isLoading = false;
+        this.rowsData = openRows ? openRows.map(v => {
+          return {
+            id: v.hash,
+            time: v.datetime,
+            tradetype: v.otype === 0 ? "buy" : "sell",
+            price: v.price / 10 ** 8,
+            amount: v.otype === 0 ? v.buy_amount : v.sell_amount,
+            market: {
+              base: v.base === CybexDotClient.baseTokenHash ? "1.3.27" : v.base,
+              quote:
+                v.quote === CybexDotClient.quoteTokenHash ? "1.3.0" : v.quote
+            },
+            filled: v.otype === 0 ? (v.buy_amount - v.remained_buy_amount) / v.buy_amount : (v.sell_amount - v.remained_sell_amount) / v.sell_amount,
+            total: v.otype === 0 ? v.sell_amount : v.buy_amount
+          };
+        }) : [];
+      };
+      await func(cleanRows, showLoading);
+      if (!this.intervalFetchData && this.enableInterval) {
+        this.intervalFetchData = setInterval(async () => {
+          await func();
+        }, this.freshRate);
       }
     },
     async fetchOrderHistory(cleanRows = true, showLoading = false) {
@@ -579,7 +629,7 @@ export default {
         );
         openRows = this.filterDataByWhiteFlag(openRows);
         await this.mapRowAssetDigits(openRows);
-        // console.log('open rows', this.enableInterval, openRows);
+        console.log('open rows', this.enableInterval, openRows);
         this.isLoading = false;
         this.rowsData = openRows ? openRows : [];
       };
@@ -596,14 +646,6 @@ export default {
         this.rowsData = [];
         return;
       }
-      // open orders
-      let openRows = await this.cybexjs.getOpenOrder(
-        this.username,
-        this.orderFilter ? this.orderFilter.base_id : this.base_id,
-        this.orderFilter ? this.orderFilter.quote_id : this.quote_id
-      );
-      await this.mapRowAssetDigits(openRows);
-      this.rowsData = openRows ? openRows : [];
     },
     async bindIntervalEvent(){
       if (document.visibilityState == "hidden") {

@@ -6,9 +6,9 @@
     <!-- filter exchange -->
     <v-flex v-if="mode !='full'" class="filters">
       <v-flex class="flex-label">
-        <span @click="searchByDate('day')" v-html="$t('exchange.order-table.filter.1-day')"/>
-        <span @click="searchByDate('week')" v-html="$t('exchange.order-table.filter.1-week')"/>
-        <span @click="searchByDate('month')" v-html="$t('exchange.order-table.filter.1-month')"/>
+        <span @click="searchByDate('day')" v-html="$t('exchange.order-table.filter.1-day')" />
+        <span @click="searchByDate('week')" v-html="$t('exchange.order-table.filter.1-week')" />
+        <span @click="searchByDate('month')" v-html="$t('exchange.order-table.filter.1-month')" />
         <span
           @click="searchByDate('3 months')"
           v-html="$t('exchange.order-table.filter.3-months')"
@@ -32,7 +32,7 @@
           full-width
           min-width="290px"
         >
-          <cybex-text-field tiny no-message slot="activator" v-model="startDateFormatted" readonly/>
+          <cybex-text-field tiny no-message slot="activator" v-model="startDateFormatted" readonly />
           <v-date-picker
             :min="limitDate"
             :max="endDate"
@@ -44,7 +44,7 @@
             no-title
             scrollable
           >
-            <v-spacer/>
+            <v-spacer />
             <v-btn
               flat
               color="#78819A"
@@ -91,7 +91,7 @@
             no-title
             scrollable
           >
-            <v-spacer/>
+            <v-spacer />
             <v-btn flat color="#78819A" @click="endMenu = false">{{ $t('exchange.dialog.Cancel') }}</v-btn>
             <v-btn
               flat
@@ -101,7 +101,7 @@
           </v-date-picker>
         </v-menu>
         <v-btn ripple @click="updateTradeHistory()" icon>
-          <v-icon d-flex size="20" v-text="'ic-search'"/>
+          <v-icon d-flex size="20" v-text="'ic-search'" />
         </v-btn>
       </v-flex>
     </v-flex>
@@ -143,7 +143,7 @@
             no-title
             scrollable
           >
-            <v-spacer/>
+            <v-spacer />
             <v-btn
               flat
               color="#78819A"
@@ -190,7 +190,7 @@
             no-title
             scrollable
           >
-            <v-spacer/>
+            <v-spacer />
             <v-btn flat color="#78819A" @click="endMenu = false">{{ $t('exchange.dialog.Cancel') }}</v-btn>
             <v-btn
               flat
@@ -207,8 +207,8 @@
             v-if="whiteFlag == 'custom'"
             v-model="selectedPair"
           />
-          <ContestBaseQuoteSelector v-else-if="whiteFlag == 'game'" v-model="selectedPair"/>
-          <BaseQuoteSelector v-else-if="whiteFlag === 'white'" v-model="selectedPair"/>
+          <ContestBaseQuoteSelector v-else-if="whiteFlag == 'game'" v-model="selectedPair" />
+          <BaseQuoteSelector v-else-if="whiteFlag === 'white'" v-model="selectedPair" />
           <v-flex>
             <cybex-btn
               :disabled="couldSearchHistory"
@@ -268,9 +268,7 @@
               'c-buy': props.item.tradetype == 'buy',
               'c-sell': props.item.tradetype == 'sell'}"
           >{{ $t('exchange.content.' + props.item.tradetype.toLowerCase()) }}</td>
-          <td
-            class="text-xs-left"
-          >{{ props.item.price | roundDigits(props.item.asset_digit_price) | shortenPrice }}</td>
+          <td class="text-xs-left">{{ props.item.price }}</td>
           <td
             class="text-xs-left"
           >{{ props.item.quote_amount | roundDigits(props.item.asset_digit_amount) }}</td>
@@ -301,7 +299,7 @@
           </td>
         </template>
         <template slot="no-data">
-          <Loading v-if="isLoading"/>
+          <Loading v-if="isLoading" />
           <div class="no-data" v-else>{{ $t('exchange.order-table.no-trade-data') }}</div>
         </template>
       </v-data-table>
@@ -333,8 +331,10 @@ import {
 export default {
   components: {
     BaseQuoteSelector: () => import("~/components/BaseQuoteSelector.vue"),
-    CustomBaseQuoteSelector: () => import("~/components/CustomBaseQuoteSelector.vue"),
-    ContestBaseQuoteSelector: () => import("~/components/ContestBaseQuoteSelector.vue"),
+    CustomBaseQuoteSelector: () =>
+      import("~/components/CustomBaseQuoteSelector.vue"),
+    ContestBaseQuoteSelector: () =>
+      import("~/components/ContestBaseQuoteSelector.vue"),
     Loading: () => import("~/components/exchange/ExchangeLoading.vue")
   },
   props: {
@@ -348,7 +348,7 @@ export default {
     },
     whiteFlag: {
       type: String,
-      default: ''
+      default: ""
     }
   },
   data() {
@@ -367,9 +367,7 @@ export default {
       limitDate: new Date(new Date().setFullYear(new Date().getFullYear() - 1))
         .toISOString()
         .substr(0, 10),
-      today: new Date()
-        .toISOString()
-        .substr(0, 10),
+      today: new Date().toISOString().substr(0, 10),
       startDate: new Date(new Date().setFullYear(new Date().getFullYear() - 1))
         .toISOString()
         .substr(0, 10),
@@ -387,7 +385,7 @@ export default {
           text: this.$t("exchange.order-table.column.pair"),
           align: "left",
           sortable: false,
-          value: "market",
+          value: "market"
         },
         {
           text: this.$t("exchange.order-table.column.side"),
@@ -430,8 +428,8 @@ export default {
     };
   },
   watch: {
-     // 用户名变化时 重新拉取数据
-    username: async function(){
+    // 用户名变化时 重新拉取数据
+    username: async function() {
       this.removeInterval();
       await this.initData();
     },
@@ -472,7 +470,10 @@ export default {
               this.showFixedHeader = false;
             }
           );
-          this.$refs.scrollEle.$el.removeEventListener("ps-scroll-y", this.onFixedHeader);
+          this.$refs.scrollEle.$el.removeEventListener(
+            "ps-scroll-y",
+            this.onFixedHeader
+          );
           this.$nextTick(() => {
             this.$refs.scrollEle.$el.scrollTop = 0;
           });
@@ -559,7 +560,7 @@ export default {
           // 根据买卖方向选择不同
           rows[idx]["asset_digit_base"] = this.staticDigits[k];
           rows[idx]["asset_digit_quote"] = this.staticDigits[k2];
-           // price精度
+          // price精度
           let dp = this.digitsPrice(item);
           rows[idx]["asset_digit_price"] = dp;
           // amount精度
@@ -577,8 +578,19 @@ export default {
         item && item.market
           ? this.coinName(item.market.quote, this.coinMap)
           : this.quoteCurrency;
-      const defaultDigits = this.isCustomPair(item.market.base, item.market.quote) ? 8 : 5;
-      return this.getPairConfig(base, quote, "book", "last_price", defaultDigits);
+      const defaultDigits = this.isCustomPair(
+        item.market.base,
+        item.market.quote
+      )
+        ? 8
+        : 5;
+      return this.getPairConfig(
+        base,
+        quote,
+        "book",
+        "last_price",
+        defaultDigits
+      );
     },
     digitsAmount: function(item) {
       const base =
@@ -589,7 +601,12 @@ export default {
         item && item.market
           ? this.coinName(item.market.quote, this.coinMap)
           : this.quoteCurrency;
-      const defaultDigits = this.isCustomPair(item.market.base, item.market.quote) ? item.asset_digit_quote : 5;
+      const defaultDigits = this.isCustomPair(
+        item.market.base,
+        item.market.quote
+      )
+        ? item.asset_digit_quote
+        : 5;
       return this.getPairConfig(base, quote, "book", "amount", defaultDigits);
     },
     onScroll(event) {
@@ -790,7 +807,10 @@ export default {
         //   filter.quote_id,
         //   filter.white_flag)
 
-        let tradeRows = await CybexDotClient.getTrades(CybexDotClient.TradePairHash, CybexDotClient.AccountId);
+        let tradeRows = await CybexDotClient.getTrades(
+          CybexDotClient.TradePairHash,
+          CybexDotClient.AccountId
+        );
 
         if (this.rowsData.length) {
           let diff = differenceWith(this.rowsData, tradeRows, isEqual);
@@ -811,7 +831,8 @@ export default {
             },
             market: {
               base: v.base === CybexDotClient.baseTokenHash ? "1.3.27" : v.base,
-              quote: v.quote === CybexDotClient.quoteTokenHash ? "1.3.0" : v.quote
+              quote:
+                v.quote === CybexDotClient.quoteTokenHash ? "1.3.0" : v.quote
             }
           };
         });
@@ -840,7 +861,6 @@ export default {
           }
         }, this.refreshRate);
       }
-
     },
 
     // 初次获取 trade order 数据
@@ -886,7 +906,7 @@ export default {
           filter.quote_id,
           filter.white_flag
         );
-         // 预处理精度
+        // 预处理精度
         await this.mapRowAssetDigits(tradeRows);
         console.log(tradeRows);
         if (this.rowsData.length) {
@@ -976,7 +996,7 @@ export default {
         this.loadingPair = false;
       }, 100);
     },
-    removeInterval(){
+    removeInterval() {
       if (this.intervalRefresh) {
         clearInterval(this.intervalRefresh);
         this.intervalRefresh = null;
@@ -1003,12 +1023,15 @@ export default {
       refreshRate: "exchange/tradesRefreshRate",
       innerWidth: "exchange/innerWidth"
     }),
-    limitAssetSize(){
-      return this.mode == 'exchange' && this.innerWidth <= 1440;
+    limitAssetSize() {
+      return this.mode == "exchange" && this.innerWidth <= 1440;
     },
-    couldSearchHistory(){
-      if (this.whiteFlag !== 'custom') return false;
-      const selectHasValue = this.selectedPair && (this.selectedPair.base_id && this.selectedPair.quote_id) || (this.selectedPair.base_id == '' && this.selectedPair.quote_id == '')
+    couldSearchHistory() {
+      if (this.whiteFlag !== "custom") return false;
+      const selectHasValue =
+        (this.selectedPair &&
+          (this.selectedPair.base_id && this.selectedPair.quote_id)) ||
+        (this.selectedPair.base_id == "" && this.selectedPair.quote_id == "");
       return selectHasValue ? false : true;
     },
     endDateFormatted: function() {
@@ -1033,8 +1056,7 @@ export default {
             : this.selectedPair.quote_id
             ? this.selectedPair.quote_id
             : null,
-        white_flag:
-          this.whiteFlag
+        white_flag: this.whiteFlag
       });
     }
   },

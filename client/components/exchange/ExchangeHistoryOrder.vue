@@ -39,15 +39,15 @@
             v-model="startdateDisplayFormatted"
             readonly
           />
-          <v-date-picker 
+          <v-date-picker
             :min="limitDate"
             :max="endDate"
             :reactive="true"
             next-icon="ic-chevron_right"
             prev-icon="ic-chevron_left"
             color="cybex-date-time"
-            v-model="startDate" 
-            no-title 
+            v-model="startDate"
+            no-title
             scrollable>
             <v-spacer/>
             <v-btn flat color="#78819A" @click="startMenu = false"> {{ $t('exchange.dialog.Cancel') }} </v-btn>
@@ -76,7 +76,7 @@
             v-model="enddateDisplayFormatted"
             readonly
           />
-          <v-date-picker 
+          <v-date-picker
             :min="startDate"
             :max="today"
             :reactive="true"
@@ -84,7 +84,7 @@
             prev-icon="ic-chevron_left"
             color="cybex-date-time"
             v-model="endDate"
-            no-title 
+            no-title
             scrollable>
             <v-spacer/>
             <v-btn flat color="#78819A" @click="endMenu = false">{{ $t('exchange.dialog.Cancel') }}</v-btn>
@@ -115,7 +115,7 @@
           full-width
           min-width="290px"
         >
-          <cybex-text-field 
+          <cybex-text-field
             tiny
             no-message
             slot="activator" v-model="startdateDisplayFormatted" readonly/>
@@ -125,7 +125,7 @@
             :reactive="true"
             next-icon="ic-chevron_right"
             prev-icon="ic-chevron_left"
-            color="cybex-date-time" 
+            color="cybex-date-time"
             v-model="startDate"
             no-title
             scrollable
@@ -150,19 +150,19 @@
           full-width
           min-width="290px"
         >
-          <cybex-text-field 
+          <cybex-text-field
             no-message
             tiny
             slot="activator" v-model="enddateDisplayFormatted" readonly/>
-          <v-date-picker 
+          <v-date-picker
             :min="startDate"
             :max="today"
             :reactive="true"
-            v-model="endDate" 
+            v-model="endDate"
             next-icon="ic-chevron_right"
             prev-icon="ic-chevron_left"
             color="cybex-date-time"
-            no-title 
+            no-title
             scrollable>
             <v-spacer/>
             <v-btn flat color="#78819A" @click="endMenu = false">{{ $t('exchange.dialog.Cancel') }}</v-btn>
@@ -181,7 +181,7 @@
             class="search mr-2 text-capitalize"
             @click="updateOrderHistory()"
           >{{ $t('exchange.content.search') }}</cybex-btn>
-          <cybex-btn 
+          <cybex-btn
             tiny
             color="minor"
             class="reset ma-0 text-capitalize" @click="resetSelectContent()">{{ $t('exchange.content.reset') }}</cybex-btn>
@@ -216,22 +216,22 @@
             <td class="col-date">{{ props.item.time | date('DD/MM HH:mm:ss') }}</td>
             <td
               class="text-xs-left"
-            ><asset-pairs 
+            ><asset-pairs
               :max-width="limitAssetSize ? '100px': null"
               :max-quote-width="limitAssetSize ? '40px': null"
-              :color-opacity="props.item.status.toLowerCase() == 'canceled' ? 0.5 : 1" 
-              :quote-id="props.item.market.quote" :spacer="false" 
+              :color-opacity="props.item.status.toLowerCase() == 'canceled' ? 0.5 : 1"
+              :quote-id="props.item.market.quote" :spacer="false"
               :base-id="props.item.market.base" /></td>
             <td
               class="text-xs-left text-uppercase"
-              :class="{ 
+              :class="{
                 'c-buy': props.item.tradetype == 'buy',
                 'c-sell': props.item.tradetype == 'sell'}"
             >{{ $t('exchange.content.' + props.item.tradetype.toLowerCase()) }}</td>
             <td
               class="text-xs-left"
             >{{ props.item.average | roundDigits(props.item.asset_digit_price, null, '--') | shortenPrice }}</td>
-            <td class="text-xs-left">{{ props.item.price | roundDigits(props.item.asset_digit_price) | shortenPrice }}</td>
+            <td class="text-xs-left">{{ props.item.price }}</td>
             <td class="text-xs-left">{{ props.item.filled | roundDigits(props.item.asset_digit_amount) }}</td>
             <td class="text-xs-left">{{ props.item.amount | roundDigits(props.item.asset_digit_amount) }}</td>
             <td
@@ -268,6 +268,7 @@ import {
   concat,
   uniqBy
 } from "lodash";
+import CybexDotClient from "~/components/exchange/CybexDotClient";
 
 export default {
   components: {
@@ -512,7 +513,7 @@ export default {
           quote_id: v ? v.quote_id : null
         });
       }
-      this.$eventHandle(this.fetchOrderHistory, ["", true]);
+      this.$eventHandle(this.fetchOrderHistory2, ["", true]);
     }
   },
   async bindIntervalEvent() {
@@ -563,7 +564,7 @@ export default {
       let times = 5,
         stop = false;
       while (times > 0 && !stop) {
-        await this.$eventHandle(this.fetchOrderHistory, ["", true])
+        await this.$eventHandle(this.fetchOrderHistory2, ["", true])
           .then(() => {
             stop = true;
             times = 0;
@@ -577,7 +578,7 @@ export default {
               orderConnect: false
             });
             times--;
-            this.$eventHandle(this.fetchOrderHistory, ["", true]);
+            this.$eventHandle(this.fetchOrderHistory2, ["", true]);
           });
       }
       if (times !== 0) {
@@ -619,7 +620,7 @@ export default {
         item && item.market
           ? this.coinName(item.market.quote, this.coinMap)
           : this.quoteCurrency;
-      const defaultDigits = this.isCustomPair(item.market.base, item.market.quote) ? item.asset_digit_quote : 5;    
+      const defaultDigits = this.isCustomPair(item.market.base, item.market.quote) ? item.asset_digit_quote : 5;
       return this.getPairConfig(base, quote, "book", "amount", defaultDigits);
     },
     digitsTotal: function() {
@@ -745,7 +746,7 @@ export default {
         );
         this.currentFilter = Object.assign({}, filter);
       }
-      this.$eventHandle(this.fetchOrderHistory, [date]);
+      this.$eventHandle(this.fetchOrderHistory2, [date]);
     },
     async mapRowAssetDigits(rows) {
       // 增加资产精度
@@ -771,6 +772,76 @@ export default {
           rows[idx]["asset_digit_amount"] = da;
         })
       );
+    },
+    async fetchOrderHistory2(date, showLoading = false) {
+      const func = async (d, show) => {
+        if (!this.username) {
+          this.isLoading = false;
+          return;
+        }
+        this.loadAll = true;
+
+        // console.log(
+        //   "fetchOrderHistory filter ",
+        //   filter
+        // );
+        // closed orders
+        if (show) {
+          this.isLoading = true;
+        }
+        let closedRows = await CybexDotClient.getOrders(
+          CybexDotClient.TradePairHash,
+          CybexDotClient.AccountId,
+          false
+        );
+
+        if (showLoading) {
+          this.isLoading = false;
+        }
+        let diff = differenceWith(this.rowsData, closedRows, isEqual);
+        if (diff.length > 1) {
+          console.log("你有" + diff.length + "笔新的成交");
+        }
+        // console.log('closedRows', this.enableInterval, closedRows);
+        this.rowsData = closedRows ? closedRows.map(v => {
+          return {
+            id: v.hash,
+            time: v.datetime,
+            tradetype: v.otype === 0 ? "buy" : "sell",
+            price: v.price / 10 ** 8,
+            amount: v.otype === 0 ? v.buy_amount : v.sell_amount,
+            market: {
+              base: v.base === CybexDotClient.baseTokenHash ? "1.3.27" : v.base,
+              quote:
+                v.quote === CybexDotClient.quoteTokenHash ? "1.3.0" : v.quote
+            },
+            base_id: v.base === CybexDotClient.baseTokenHash ? "1.3.27" : v.base,
+            quote_id: v.quote === CybexDotClient.quoteTokenHash ? "1.3.0" : v.quote,
+            filled: v.otype === 0 ? (v.buy_amount - v.remained_buy_amount) : (v.sell_amount - v.remained_sell_amount),
+            total: v.otype === 0 ? v.sell_amount : v.buy_amount,
+            average: null,
+            status: v.status === 2 ? "Filled" : "Canceled"
+          };
+        }) : [];
+
+        this.$nextTick(() => {
+          this.delaySetLoading();
+        });
+      };
+      await func(date, showLoading);
+      // 检查是否定期更新数据
+      if (!this.intervalRefresh && this.enableInterval) {
+        this.intervalRefresh = setInterval(async () => {
+          // 只有最后时间为当天, 且没有翻页过的时候才读取数据
+          // if (!this.currentFilter) return;
+          // const filterEnd = moment(this.currentFilter.end).format("YYYY-MM-DD");
+          // const today = moment().format("YYYY-MM-DD");
+          // if (this.currentFilter.lastid === null && filterEnd == today) {
+            await func();
+          // }
+        }, this.refreshRate);
+      }
+      // console.log(">>>>>> Closed Orders", closedRows);
     },
     async fetchOrderHistory(date, showLoading = false) {
       const func = async (d, show) => {
@@ -836,45 +907,45 @@ export default {
     // Change filter, reload data
     async updateOrderHistory() {
       if (!this.username) return;
-      this.isLoading = true;
-      this.loadAll = false;
-      this.rowsData = [];
-      if (this.$refs.refEndMenu && this.endMenu) {
-        this.$refs.refEndMenu.save(this.endDate);
-      }
-      if (this.$refs.refStartMenu && this.startMenu) {
-        this.$refs.refStartMenu.save(this.startDate);
-      }
-      let filter = Object.assign({}, this.filter, this.calcFilterByDate());
-      this.currentFilter = Object.assign({}, filter);
-      console.log(
-        "change order history filter>>>>",
-        this.username,
-        filter.start,
-        filter.end,
-        this.limit,
-        null,
-        filter.base_id,
-        filter.quote_id,
-        filter.white_flag
-      );
-      let closedRows = await this.cybexjs.getClosedOrder(
-        this.username,
-        filter.start,
-        filter.end,
-        this.limit,
-        null,
-        filter.base_id,
-        filter.quote_id,
-        filter.white_flag
-      );
-      await this.mapRowAssetDigits(closedRows);
-      this.rowsData = closedRows ? closedRows : [];
-      this.isLoading = false;
+      // this.isLoading = true;
+      // this.loadAll = false;
+      // this.rowsData = [];
+      // if (this.$refs.refEndMenu && this.endMenu) {
+      //   this.$refs.refEndMenu.save(this.endDate);
+      // }
+      // if (this.$refs.refStartMenu && this.startMenu) {
+      //   this.$refs.refStartMenu.save(this.startDate);
+      // }
+      // let filter = Object.assign({}, this.filter, this.calcFilterByDate());
+      // this.currentFilter = Object.assign({}, filter);
+      // console.log(
+      //   "change order history filter>>>>",
+      //   this.username,
+      //   filter.start,
+      //   filter.end,
+      //   this.limit,
+      //   null,
+      //   filter.base_id,
+      //   filter.quote_id,
+      //   filter.white_flag
+      // );
+      // let closedRows = await this.cybexjs.getClosedOrder(
+      //   this.username,
+      //   filter.start,
+      //   filter.end,
+      //   this.limit,
+      //   null,
+      //   filter.base_id,
+      //   filter.quote_id,
+      //   filter.white_flag
+      // );
+      // await this.mapRowAssetDigits(closedRows);
+      // this.rowsData = closedRows ? closedRows : [];
+      // this.isLoading = false;
     },
     async loadOrderNextPage() {
       if (!this.username) return;
-      this.isLoading = true;
+      // this.isLoading = false;
       // console.log(
       //   "loading order next page",
       //   this.username,
@@ -886,23 +957,23 @@ export default {
       //   this.currentFilter.quote_id,
       //   this.currentFilter.white_flag
       // );
-      let closedRows = await this.cybexjs.getClosedOrder(
-        this.username,
-        this.currentFilter.start,
-        this.currentFilter.end,
-        this.limit,
-        this.currentFilter.lastid,
-        this.currentFilter.base_id,
-        this.currentFilter.quote_id,
-        this.currentFilter.white_flag
-      );
-      if (closedRows.length === 0) {
-        this.loadAll = true;
-      }
-      await this.mapRowAssetDigits(closedRows);
-      console.log("原来的数据", this.rowsData);
-      console.log("下一页的数据", closedRows);
-      this.rowsData = uniqBy(concat(this.rowsData, closedRows), "id");
+      // let closedRows = await this.cybexjs.getClosedOrder(
+      //   this.username,
+      //   this.currentFilter.start,
+      //   this.currentFilter.end,
+      //   this.limit,
+      //   this.currentFilter.lastid,
+      //   this.currentFilter.base_id,
+      //   this.currentFilter.quote_id,
+      //   this.currentFilter.white_flag
+      // );
+      // if (closedRows.length === 0) {
+      //   this.loadAll = true;
+      // }
+      // await this.mapRowAssetDigits(closedRows);
+      // console.log("原来的数据", this.rowsData);
+      // console.log("下一页的数据", closedRows);
+      // this.rowsData = uniqBy(concat(this.rowsData, closedRows), "id");
       this.isLoading = false;
       this.nextpage = false;
     },

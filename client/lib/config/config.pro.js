@@ -2,15 +2,15 @@ export default {
   NODE_LIST: [
     // 'wss://shenzhen.51nebula.com',
     // 'wss://hangzhou.51nebula.com/', // 这是测试链
-    'wss://shanghai.51nebula.com/',
-    'wss://beijing.51nebula.com/',
-    "wss://hkbak.cybex.io/",
+    // 'wss://shanghai.51nebula.com/',
+    // 'wss://beijing.51nebula.com/',
+    // "wss://hkbak.cybex.io/",
     'wss://hongkong.cybex.io/',
-    'wss://tokyo-01.cybex.io/',
-    'wss://korea-01.cybex.io/',
-    'wss://singapore-01.cybex.io/',
-    'wss://europe01.cybex.io/',
-    'wss://usa-01.cybex.io/'
+    // 'wss://tokyo-01.cybex.io/',
+    // 'wss://korea-01.cybex.io/',
+    // 'wss://singapore-01.cybex.io/',
+    // 'wss://europe01.cybex.io/',
+    // 'wss://usa-01.cybex.io/'
   ],
   gaID:'UA-129900093-1',
   umengID: "1277677507",

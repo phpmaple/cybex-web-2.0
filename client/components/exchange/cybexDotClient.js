@@ -8,10 +8,13 @@ import {
   throw_err
 } from '~/lib/utils'
 
-const TradePairHash = "0xcaaeddaf99a21515939a2389c415ff374262b4f7bd574ad65d1c51326ca4e999";
-const quoteTokenHash = "0xa4aa6a221e9a57b2f0d8fc3208ae14b190e7ac56f5c0b31f26ca77844d377ca2"; // 1.3.0
-const baseTokenHash = "0x861611069fb081b9a36a94ccbbac088a7d482a0d8ba9853bcdb9c954f14cf254"; // 1.3.27
-const AccountId = "5DAAnrj7VHTznn2AWBemMuyBwZWs6FNFjdyVXUeYum3PTXFy";
+const TradePairHash = "0xee3f4c8a29c9da81d90abc6ee0924af692cac29ffada76de72de654904d61ad0";
+const quoteTokenHash = "0xa4ef6e74871c97bd56904c23209c8f33dc3cd42c39f2435166d0b9bee0efe191"; // 1.3.0
+const baseTokenHash = "0xadc13240012cde633e69c6bce7f0aa19bff36a040b8c8ef10bd1fee9c55eb0b1"; // 1.3.27
+const AccountId = "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY";
+//5DAAnrj7VHTznn2AWBemMuyBwZWs6FNFjdyVXUeYum3PTXFy
+//5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
+const accountName = "ALICE"; // DAVE ALICE
 
 let api;
 let account;
@@ -24,7 +27,7 @@ async function init() {
   });
 
   const keyring = new Keyring({ type: 'sr25519' });
-  account = keyring.addFromUri('//Dave', { name: 'Dave default' });
+  account = keyring.addFromUri(`//${accountName}`, { name: 'default' });
 }
 
 // Read
@@ -54,8 +57,12 @@ async function getMarket(pairHash, period, before) {
   if (!time) {
     time = moment.utc().format("YYYY-MM-DDTHH:mm:ss.SSS") + "Z"
   }
-  const params = {before: time, period: period, limit: 200};
-  const result = axios.get(`${config.cybexDotExplorerApiServer}market/${pairHash}`, { params });
+  console.log("market request:-------", pairHash, period, before);
+
+  const params = {before: time, period: period, limit: 20};
+  const result = await axios.get(`${config.cybexDotExplorerApiServer}market/${pairHash}`, { params });
+  console.log("market result:-------", result);
+
   if (result.status === 200) {
     return result.data;
   } else {
@@ -84,8 +91,8 @@ async function getTicker(pairHash) {
   }
 }
 
-async function getOrders(pairHash, accountId) {
-  const params = {accountId: accountId};
+async function getOrders(pairHash, accountId, isOpened) {
+  const params = {accountId: accountId, hash: pairHash, isOpened: isOpened ? 1 : 0};
   const order = await getTicker(pairHash);
 
   const result = await axios.get(`${config.cybexDotExplorerApiServer}orders`, { params });
@@ -113,21 +120,21 @@ async function transfer(tokenHash, toAccountId, amount) {
 }
 
 async function createLimitOrder(pairHash, isBuy, price, amount) {
-  // console.log(pairHash, isBuy, price, amount);
+  console.log(pairHash, isBuy, parseFloat((price * 10 ** 8).toFixed(2)), amount);
   let realAmount;
   let type;
   if (isBuy) {
     type = 0;
-    realAmount = price * amount;
+    realAmount = parseFloat((price * amount).toFixed(2));
   } else {
     type = 1;
-    realAmount = amount;
+    realAmount = parseInt(amount);
   }
 
   const ticker = await getTicker(pairHash);
   return new Promise(resolve => { // OrderCreated (accountId, baseTokenHash, quoteTokenHash, orderHash, LimitOrder)
         api.tx.tradeModule
-        .createLimitOrder(ticker.base, ticker.quote, type, price * 10 ** 8, realAmount) // price need * 10 ** 8
+        .createLimitOrder(ticker.base, ticker.quote, type, parseFloat((price * 10 ** 8).toFixed(2)), realAmount) // price need * 10 ** 8
         .signAndSend(account, (result) => {
             if (result.status.isFinalized) {
                 const record = result.findRecord("tradeModule", "OrderCreated");
