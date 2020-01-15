@@ -94,7 +94,7 @@ import utils from "~/components/mixins/utils";
 import { concat, uniqBy, keys } from "lodash";
 import config from "~/lib/config/config.js";
 import { BigNumber } from "bignumber.js";
-import CybexDotClient from "~/components/exchange/CybexDotClient";
+import CybexDotClient from "~/lib/CybexDotClient";
 
 export default {
   components: {

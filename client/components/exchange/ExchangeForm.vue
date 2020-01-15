@@ -212,7 +212,7 @@ import { mapGetters, mapActions } from "vuex";
 import { divide, findIndex, floor, ceil, round } from "lodash";
 import { BigNumber } from "bignumber.js";
 import utils from "~/components/mixins/utils";
-import CybexDotClient from "~/components/exchange/CybexDotClient";
+import CybexDotClient from "~/lib/CybexDotClient";
 
 export default {
   name: "ExchangeForm",

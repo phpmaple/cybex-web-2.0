@@ -11,7 +11,7 @@
 // };
 import moment from "moment-timezone";
 import { invert, values } from "lodash";
-import CybexDotClient from "~/components/exchange/CybexDotClient";
+import CybexDotClient from "~/lib/CybexDotClient";
 
 export function convertResolutionByValue(value, source) {
   let search = invert(source);

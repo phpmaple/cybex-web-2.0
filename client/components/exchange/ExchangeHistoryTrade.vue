@@ -313,7 +313,7 @@ import utils from "~/components/mixins/utils";
 import { last } from "lodash";
 import moment from "moment";
 import PerfectScrollbar from "perfect-scrollbar";
-import CybexDotClient from "~/components/exchange/CybexDotClient";
+import CybexDotClient from "~/lib/CybexDotClient";
 
 import {
   isEqual,

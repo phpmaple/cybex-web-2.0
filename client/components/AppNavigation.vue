@@ -273,7 +273,7 @@ import { mapGetters, mapActions } from "vuex";
 import utils from "~/components/mixins/utils";
 import jdenticon from "jdenticon";
 import sha256 from "sha256";
-import CybexDotClient from "~/components/exchange/CybexDotClient";
+import CybexDotClient from "~/lib/CybexDotClient";
 
 export default {
   name: "AppNavgation",

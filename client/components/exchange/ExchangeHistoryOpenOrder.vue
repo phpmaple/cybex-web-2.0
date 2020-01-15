@@ -157,7 +157,7 @@ import { mapGetters } from "vuex";
 import { values, map, filter, find, isEqual, isEqualWith, reverse } from 'lodash';
 import utils from "~/components/mixins/utils";
 import config from "~/lib/config/config.js";
-import CybexDotClient from "~/components/exchange/CybexDotClient";
+import CybexDotClient from "~/lib/CybexDotClient";
 
 export default {
   props: {
