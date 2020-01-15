@@ -9,7 +9,7 @@
     "dev:prod:no_mdp": "USE_MDP=0 USE_TESTNET=0 nuxt",
     "dev:prod:mdp2": "USE_ENV=mdp2 USE_TESTNET=0 nuxt",
     "dev:uat": "USE_ENV=uat nuxt",
-    "build": "USE_TESTNET=1 nuxt build",
+    "build": "USE_TESTNET=0 nuxt build",
     "start": "nuxt start",
     "generate": "USE_TESTNET=1 nuxt generate",
     "generate:prod": "USE_TESTNET=0 nuxt generate",
