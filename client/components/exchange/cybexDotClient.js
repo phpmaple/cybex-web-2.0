@@ -8,13 +8,13 @@ import {
   throw_err
 } from '~/lib/utils'
 
-const TradePairHash = "0xee3f4c8a29c9da81d90abc6ee0924af692cac29ffada76de72de654904d61ad0";
-const quoteTokenHash = "0xa4ef6e74871c97bd56904c23209c8f33dc3cd42c39f2435166d0b9bee0efe191"; // 1.3.0
-const baseTokenHash = "0xadc13240012cde633e69c6bce7f0aa19bff36a040b8c8ef10bd1fee9c55eb0b1"; // 1.3.27
-const AccountId = "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY";
+const TradePairHash = "0x71cd36736269e1f0a3bf6b5680c87f0a696a894869f480f65fea09c72c58caf6";
+const quoteTokenHash = "0x29c56c214d9881ba8aea441bb9b9a7bcdf2895ad41c66e26ed7c5e2bdb3de890"; // 1.3.0
+const baseTokenHash = "0x019cf55f5b89f0b663cce868264016ece24485ebef35e1d03b58aa74c854412b"; // 1.3.27
+const AccountId = "5DAAnrj7VHTznn2AWBemMuyBwZWs6FNFjdyVXUeYum3PTXFy";
 //5DAAnrj7VHTznn2AWBemMuyBwZWs6FNFjdyVXUeYum3PTXFy
 //5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
-const accountName = "ALICE"; // DAVE ALICE
+const accountName = "Dave"; // Dave Alice
 
 let api;
 let account;
@@ -132,6 +132,9 @@ async function createLimitOrder(pairHash, isBuy, price, amount) {
   }
 
   const ticker = await getTicker(pairHash);
+  return api.tx.tradeModule
+        .createLimitOrder(ticker.base, ticker.quote, type, parseFloat((price * 10 ** 8).toFixed(2)), realAmount) // price need * 10 ** 8
+        .signAndSend(account);
   return new Promise(resolve => { // OrderCreated (accountId, baseTokenHash, quoteTokenHash, orderHash, LimitOrder)
         api.tx.tradeModule
         .createLimitOrder(ticker.base, ticker.quote, type, parseFloat((price * 10 ** 8).toFixed(2)), realAmount) // price need * 10 ** 8
@@ -145,6 +148,9 @@ async function createLimitOrder(pairHash, isBuy, price, amount) {
 }
 
 async function cancelLimitOrder(orderHash) {
+  return api.tx.tradeModule
+        .cancelLimitOrder(orderHash)
+        .signAndSend(account);
   return new Promise(resolve => { // OrderCanceled(accountId, orderHash,
         api.tx.tradeModule
         .cancelLimitOrder(orderHash)
@@ -186,6 +192,7 @@ export default {
   baseTokenHash,
   quoteTokenHash,
   AccountId,
+  accountName,
 
   init,
   getBalance,

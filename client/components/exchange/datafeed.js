@@ -44,7 +44,7 @@ export async function getHistoryData(loader, base_id, quote_id, bucket_seconds, 
 
 export async function getHistoryData2(loader, base_id, quote_id, bucket_seconds, requestStartDate, requestEndDate) {
   let bars = [];
-
+  return [];
   let barsData = await CybexDotClient.getMarket(
     CybexDotClient.TradePairHash,
     bucket_seconds,

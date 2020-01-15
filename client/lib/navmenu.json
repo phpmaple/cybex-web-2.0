@@ -9,7 +9,7 @@
       }
     },
     "dot": {
-      "enable": true,
+      "enable": false,
       "url": "/dot",
       "text": {
         "en": "Order To Mine",
@@ -20,14 +20,14 @@
     }
   },
   "external": {
-    "enable": true,
+    "enable": false,
     "text": {
       "en": "Hot Activities",
       "zh-cn": "热门活动"
     },
     "items": {
       "eto": {
-        "enable": true,
+        "enable": false,
         "url": "https://olddex.cybex.io/eto",
         "text": {
           "en": "ETO Subscription",
@@ -43,7 +43,7 @@
         }
       },
       "lockdrop": {
-        "enable": true,
+        "enable": false,
         "url": "https://olddex.cybex.io/lockdrop",
         "text": {
           "en": "Lockdrop",

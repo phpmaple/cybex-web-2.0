@@ -43,7 +43,7 @@
               @input="validUserInput('price', $event)"
               class="d-flex exchange-form-input theme--cybex-dark"
               :step="getStep('price_step')"
-            />
+            >
             <span class="exchange-form-input-suffix">
               <asset-pairs :color-opacity="0.5" :max-width="'60px'" :asset-id="baseCurrency" />
             </span>
@@ -72,7 +72,7 @@
               @input="validUserInput('amount', $event)"
               class="d-flex exchange-form-input"
               :step="getStep('amount_step')"
-            />
+            >
             <span class="exchange-form-input-suffix">
               <asset-pairs :color-opacity="0.5" :max-width="'60px'" :asset-id="quoteCurrency" />
             </span>
@@ -103,7 +103,7 @@
               @keypress="validUserKeypress($event)"
               @input="validUserInput('total', $event)"
               class="d-flex exchange-form-input"
-            />
+            >
             <span class="exchange-form-input-suffix">
               <asset-pairs :color-opacity="0.5" :max-width="'60px'" :asset-id="baseCurrency" />
             </span>
@@ -156,8 +156,8 @@
       <v-card>
         <v-card-title class="headline">
           {{ $t('exchange.dialog.confirm-order', {
-          action: isBuy ? $t('exchange.order-form.title.buy') : $t('exchange.order-form.title.sell'),
-          currency: shortenQuoteCurrency
+            action: isBuy ? $t('exchange.order-form.title.buy') : $t('exchange.order-form.title.sell'),
+            currency: shortenQuoteCurrency
           }) }}
         </v-card-title>
         <v-card-text class="headline">
@@ -736,6 +736,7 @@ export default {
         this.price,
         this.amount
       );
+
       if (result !== null) {
         this.$emit("create-trade-success");
         this.$message({

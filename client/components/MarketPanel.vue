@@ -649,7 +649,7 @@ export default {
       }
     },
     showPanelHandler() {
-      this.showMarket = !this.showMarket;
+      this.showMarket = false;
     },
     resetScrollbar(key) {
       if (this.scrollhash[key]) {

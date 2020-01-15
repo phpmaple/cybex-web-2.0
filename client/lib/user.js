@@ -103,6 +103,8 @@ export class UserService {
   }
   // 是否用户密码锁已锁
   getIsLocked() {
+    // TODO: tmp modify state
+    return false;
     return !(this._keys && this._keys.length > 0);
   }
   /**

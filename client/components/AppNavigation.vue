@@ -38,13 +38,13 @@
         </router-link>
       </div>
       <div class="divider"/>
-      <div d-flex class="volume24h">
+      <!-- <div d-flex class="volume24h">
         <div class="label">{{ $t('nav.volume24h') }}</div>
         <div class="volume">
           {{ volume24h && !is_contest && !asset_is_custom? volume24h : '--' }} &nbsp;
           <asset-pairs :asset-id="volumeCoin"/>
         </div>
-      </div>
+      </div> -->
       <div class="exchange-tab" :class="{'fill-height': $route.path.indexOf('/exchange') > -1}">
         <nuxt-link
           :to="$i18n.path(defaultExchangePath)"
@@ -52,15 +52,15 @@
         >{{ $t('nav.exchange') }}</nuxt-link>
       </div>
       <!-- 读取配置生成对应菜单 -->
-      <div v-for="(menu, menuIdx) of navMenus.internal" :key="menuIdx" class="fill-height d-flex align-center">
+      <!-- <div v-for="(menu, menuIdx) of navMenus.internal" :key="menuIdx" class="fill-height d-flex align-center">
         <div v-if="menu.enable" class="exchange-tab" :class="{'fill-height': $route.path.indexOf(menu.url) > -1}">
           <nuxt-link
             :to="$i18n.path(menu.url)"
             :class="getLinkClass(menu.url)"
           >{{ locale == 'en' ? menu.text['en'] : menu.text['zh-cn'] }}</nuxt-link>
         </div>
-      </div>
-      <v-menu
+      </div> -->
+      <!-- <v-menu
         v-if="navMenus.external && navMenus.external.enable"
         content-class="nav-menu"
         class="ml-3 pl-0 exchange-tab nav-menu-wrapper column activity"
@@ -81,7 +81,7 @@
             </v-list-tile-title>
           </v-list-tile>
         </v-list>
-      </v-menu>
+      </v-menu> -->
       <v-spacer/>
       <!-- funds menu -->
       <v-menu
@@ -147,9 +147,9 @@
       <div v-if="username" class="portrait-link">
         <div v-if="switchUserList.length < 1" class="toggle-user-wrapper">
           <!-- 头像  -->
-          <UserPortrait :username="username" size="64"/>
+          <UserPortrait :username="cybexDotName" size="64"/>
           <!-- 用户名 -->
-          <div class="pl-3 overflow-username" :title="username">{{ username }}</div>
+          <div class="pl-3 overflow-username" :title="username">{{ cybexDotName }}</div>
         </div>
         <!-- 可切换用户名 -->
         <v-menu
@@ -164,9 +164,9 @@
         >
           <div slot="activator" class="toggle-user-wrapper">
             <!-- 头像  -->
-            <UserPortrait :username="username" size="64"/>
+            <UserPortrait :username="cybexDotName" size="64"/>
             <!-- 用户名 -->
-            <div class="pl-3 overflow-username cursor-pointer" :title="username">{{ username }}</div>
+            <div class="pl-3 overflow-username cursor-pointer" :title="username">{{ cybexDotName }}</div>
           </div>
           <v-list class="asset-menu">
             <v-list-tile
@@ -273,6 +273,7 @@ import { mapGetters, mapActions } from "vuex";
 import utils from "~/components/mixins/utils";
 import jdenticon from "jdenticon";
 import sha256 from "sha256";
+import CybexDotClient from "~/components/exchange/CybexDotClient";
 
 export default {
   name: "AppNavgation",
@@ -292,6 +293,7 @@ export default {
   },
   data() {
     return {
+      cybexDotName: CybexDotClient.accountName,
       defaultCoin: "ETH",
       openLanMenu: false,
       intervalVolume: null,

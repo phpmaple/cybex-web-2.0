@@ -13,3 +13,4 @@ config.local.js
 
 /dist
 .vscode
+.DS_Store

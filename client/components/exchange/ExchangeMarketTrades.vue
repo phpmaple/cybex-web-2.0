@@ -4,7 +4,7 @@
     <div class="exchange-block-title">
       <span>{{ $t('exchange.block-title.market-trades') }}</span>
     </div>
-    <Loading v-if="isLoading"/>
+    <Loading v-if="isLoading" />
     <template v-else class="exchange-block-containerWrapper">
       <div class="trade-row-container" ref="rowsContent">
         <perfect-scrollbar :options="{useBothWheelAxes: true}">
@@ -16,7 +16,9 @@
                 'c-buy': trade.tradetype == 'buy',
                 'c-sell': trade.tradetype =='sell'}"
             >{{ trade.price | roundDigits(digitsPrice) | shortenPrice }}</span>
-            <span class="amount">{{ trade.quote | roundDigits(digitsAmount) | avoidMinAmount(digitsAmount) }}</span>
+            <span
+              class="amount"
+            >{{ trade.quote | roundDigits(digitsAmount) | avoidMinAmount(digitsAmount) }}</span>
             <span class="time c-white-30">{{ trade.time | localDate('HH:mm:ss') }}</span>
           </div>
         </perfect-scrollbar>
@@ -41,7 +43,11 @@ export default {
     Loading: () => import("~/components/exchange/ExchangeLoading.vue")
   },
   head() {
-    let currencies = (this.$route.params.currency || this.$route.params.pairs || "").replace(/_/, "/");
+    let currencies = (
+      this.$route.params.currency ||
+      this.$route.params.pairs ||
+      ""
+    ).replace(/_/, "/");
     // todo 动态获取价格
     let price = this.currentOrderPrice;
     const digits = this.digitsPrice;
@@ -51,7 +57,7 @@ export default {
     }
     return {
       title: this.$t("title.exchange", {
-        price: price ? price : '--',
+        price: price ? price : "--",
         currencies: currencies
       })
     };
@@ -84,16 +90,18 @@ export default {
       }
     },
     async initData() {
-        // 动态获取最新交易信息
+      // 动态获取最新交易信息
       this.$eventHandle(this.fetchSubstrateMarketTrades, [
         this.base_id,
         this.quote_id
-      ]).then(() => {
-        this.isLoading = false;
-        console.log(">>> 初始化Market trades", new Date());
-      }).catch(e => {});
+      ])
+        .then(() => {
+          this.isLoading = false;
+          console.log(">>> 初始化Market trades", new Date());
+        })
+        .catch(e => {});
     },
-    removeInterval(){
+    removeInterval() {
       if (this.intervalMarketTrade) {
         // 确保定时器清除
         clearInterval(this.intervalMarketTrade);
@@ -112,18 +120,18 @@ export default {
     async fetchSubstrateMarketTrades() {
       let func = async () => {
         const trades = await CybexDotClient.getTrades(
-          CybexDotClient.TradePairHash,
+          CybexDotClient.TradePairHash
         );
-  
+
         this.trades = trades.map(t => {
           return {
             tradetype: t.otype == 0 ? "buy" : "sell",
             price: t.price / 10 ** 8,
             quote: t.quote_amount,
             time: t.datetime
-          }
+          };
         });
-      }
+      };
       await func();
       // console.log(">>>>>> Market Trades 实时交易数据", this.trades);
       if (!this.intervalMarketTrade) {
@@ -193,7 +201,6 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-
 @import '~assets/style/_fonts/_font_mixin';
 
 .exchange-block-title {
@@ -213,8 +220,8 @@ export default {
   display: flex;
   align-items: center;
   line-height: 1.67;
-  // f-cybex-style(roman);
 
+  // f-cybex-style(roman);
   >span {
     display: inline-block;
     // opacity: 0.8;
@@ -222,10 +229,12 @@ export default {
     -moz-user-select: none;
     -webkit-user-select: none;
     -ms-user-select: none;
+
     &:hover {
       &.price {
         opacity: 0.7;
       }
+
       cursor: pointer;
     }
 
@@ -236,7 +245,7 @@ export default {
     &.amount {
       flex: 1 1 50px;
       text-align: right;
-      color: rgba(255, 255, 255, 0.8)
+      color: rgba(255, 255, 255, 0.8);
     }
 
     &.time {
