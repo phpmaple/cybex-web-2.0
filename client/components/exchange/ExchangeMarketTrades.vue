@@ -30,7 +30,7 @@
 <script>
 import utils from "~/components/mixins/utils";
 import { mapGetters } from "vuex";
-import CybexDotClient from "~/lib/CybexDotClient";
+import CybexDotClient from "~/lib/CybexDotClient.js";
 
 export default {
   watch: {

@@ -268,7 +268,7 @@ import {
   concat,
   uniqBy
 } from "lodash";
-import CybexDotClient from "~/lib/CybexDotClient";
+import CybexDotClient from "~/lib/CybexDotClient.js";
 
 export default {
   components: {

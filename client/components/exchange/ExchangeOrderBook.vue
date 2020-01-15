@@ -174,7 +174,7 @@
 <script>
 import { mapGetters } from "vuex";
 import utils from "~/components/mixins/utils";
-import CybexDotClient from "~/lib/CybexDotClient";
+import CybexDotClient from "~/lib/CybexDotClient.js";
 
 import { reverse, max, maxBy, concat, take, takeRight, zipWith } from "lodash";
 
