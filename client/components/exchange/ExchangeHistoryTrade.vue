@@ -809,7 +809,7 @@ export default {
 
         let tradeRows = await CybexDotClient.getTrades(
           CybexDotClient.TradePairHash,
-          50,
+          20,
           CybexDotClient.AccountId
         );
 

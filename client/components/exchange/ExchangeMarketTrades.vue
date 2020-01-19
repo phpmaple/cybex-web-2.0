@@ -121,7 +121,7 @@ export default {
       let func = async () => {
         const trades = await CybexDotClient.getTrades(
           CybexDotClient.TradePairHash,
-          20
+          50
         );
 
         this.trades = trades.map(t => {
