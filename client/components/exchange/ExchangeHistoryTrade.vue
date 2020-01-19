@@ -809,6 +809,7 @@ export default {
 
         let tradeRows = await CybexDotClient.getTrades(
           CybexDotClient.TradePairHash,
+          50,
           CybexDotClient.AccountId
         );
 
@@ -1030,7 +1031,8 @@ export default {
       if (this.whiteFlag !== "custom") return false;
       const selectHasValue =
         (this.selectedPair &&
-          (this.selectedPair.base_id && this.selectedPair.quote_id)) ||
+          this.selectedPair.base_id &&
+          this.selectedPair.quote_id) ||
         (this.selectedPair.base_id == "" && this.selectedPair.quote_id == "");
       return selectHasValue ? false : true;
     },

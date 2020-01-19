@@ -120,7 +120,8 @@ export default {
     async fetchSubstrateMarketTrades() {
       let func = async () => {
         const trades = await CybexDotClient.getTrades(
-          CybexDotClient.TradePairHash
+          CybexDotClient.TradePairHash,
+          20
         );
 
         this.trades = trades.map(t => {

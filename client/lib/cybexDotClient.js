@@ -8,9 +8,9 @@ import {
   throw_err
 } from '~/lib/utils'
 
-const TradePairHash = "0x71cd36736269e1f0a3bf6b5680c87f0a696a894869f480f65fea09c72c58caf6";
-const quoteTokenHash = "0x29c56c214d9881ba8aea441bb9b9a7bcdf2895ad41c66e26ed7c5e2bdb3de890"; // 1.3.0
-const baseTokenHash = "0x019cf55f5b89f0b663cce868264016ece24485ebef35e1d03b58aa74c854412b"; // 1.3.27
+const TradePairHash = "0x2b58c85113b5c19d838c4b1b4c024d6f6f7f75f8796f4a2675d17dbe9d5e8b65";
+const quoteTokenHash = "0x65609ec1db09630dd910e79e70812bcc0988ef47b655c578abd5bbac5b9c46df"; // 1.3.0
+const baseTokenHash = "0x748ea2329a21712c562a765df838de8b7d0039b432ab464f9ed5fd099739ee22"; // 1.3.27
 const AccountId = "5DAAnrj7VHTznn2AWBemMuyBwZWs6FNFjdyVXUeYum3PTXFy";
 //5DAAnrj7VHTznn2AWBemMuyBwZWs6FNFjdyVXUeYum3PTXFy
 //5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
@@ -70,8 +70,8 @@ async function getMarket(pairHash, period, before) {
   }
 }
 
-async function getTrades(pairHash, accountId) {
-  const params = accountId ? {accountId: accountId, hash: pairHash} : {hash: pairHash};
+async function getTrades(pairHash, count = 20, accountId) {
+  const params = accountId ? {accountId: accountId, hash: pairHash, count} : {hash: pairHash, count};
   const result = await axios.get(`${config.cybexDotExplorerApiServer}trades`, { params });
 
   if (result.status === 200) {
