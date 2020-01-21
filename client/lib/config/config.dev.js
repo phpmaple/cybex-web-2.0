@@ -78,7 +78,7 @@ export default {
   smallCYBAmount: 100,
   cybexDotServer: "ws://47.100.239.204:9944/",
   cybexDotExplorerApiServer: "http://127.0.0.1:7001/api/v1/",
-  cybexDotMarketApiServer: "http://47.101.64.138:8080/api/v1/harvester/",
+  cybexDotMarketApiServer: "http://127.0.0.1:8008/",
   cybexDotCustomTypes:{
     Token: {
       hash: "H256",
