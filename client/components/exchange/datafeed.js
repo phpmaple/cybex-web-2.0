@@ -44,7 +44,7 @@ export async function getHistoryData(loader, base_id, quote_id, bucket_seconds, 
 
 export async function getHistoryData2(loader, base_id, quote_id, bucket_seconds, requestStartDate, requestEndDate) {
   let bars = [];
-  return [];
+
   let barsData = await CybexDotClient.getMarket(
     CybexDotClient.TradePairHash,
     bucket_seconds,
@@ -57,7 +57,7 @@ export async function getHistoryData2(loader, base_id, quote_id, bucket_seconds,
       open: data.open / 10 ** 8,
       high: data.high / 10 ** 8,
       low: data.low / 10 ** 8,
-      volume: parseFloat(data.volume)
+      volume: parseFloat(data.quote_amount)
     });
   });
   return bars;
@@ -145,7 +145,7 @@ export class Datafeed {
     if (!bucket_seconds) {
       bucket_seconds = 60;
     }
-    // console.log('============= get bars');
+    // console.log('============= currentResolution:', currentResolution, this.resolution);
     if (this.intervalGetNewBar) {
       clearInterval(this.intervalGetNewBar);
       this.intervalGetNewBar = null;
@@ -157,7 +157,7 @@ export class Datafeed {
     let end = moment
       .unix(endDate)
       .utc()
-      .format("YYYY-MM-DDTHH:mm:ss.SSS") + "Z";
+      .format("YYYY-MM-DD HH:mm:ss");
     try {
       this.bars = await getHistoryData2(this.cybexjs, this.base_id, this.quote_id, bucket_seconds, start, end);
 
@@ -179,6 +179,7 @@ export class Datafeed {
     if (!bucket_seconds) {
       bucket_seconds = 60;
     }
+    // console.log('============= currentResolution:', currentResolution, this.resolution);
     let requestNewBar = async () => {
       let start = moment
         .unix(this.lastBar.time / 1000)
@@ -186,7 +187,7 @@ export class Datafeed {
         .format(this.dateXHRFormat);
       let end = moment()
         .utc()
-        .format("YYYY-MM-DDTHH:mm:ss.SSS") + "Z";
+        .format("YYYY-MM-DD HH:mm:ss");
       let bars = await getHistoryData2(this.cybexjs, this.base_id, this.quote_id, bucket_seconds, start, end);
       if (bars.length) {
         let newLastBar = bars[bars.length - 1];

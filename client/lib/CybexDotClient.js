@@ -52,16 +52,20 @@ async function getOrderBook(pairHash) {
   }
 }
 
-async function getMarket(pairHash, period, before) {
+async function getMarket(pairHash, period, before) { // period: 1m 5m 1h 1d
   let time = before;
+  const intervalMap = {60: "1m", 300: "5m", 3600: "1h", 86400: "1d"}
   if (!time) {
-    time = moment.utc().format("YYYY-MM-DDTHH:mm:ss.SSS") + "Z"
+    time = moment.utc().format("YYYY-MM-DD HH:mm:ss")
   }
-  console.log("market request:-------", pairHash, period, before);
 
-  const params = {before: time, period: period, limit: 20};
-  const result = await axios.get(`${config.cybexDotExplorerApiServer}market/${pairHash}`, { params });
-  console.log("market result:-------", result);
+  const order = await getTicker(pairHash);
+
+  // console.log("market request:-------", order, pairHash, period, before);
+
+  const params = {time: time, interval: intervalMap[period] ? intervalMap[period] : "1m", base: order.base, quote: order.quote};
+  const result = await axios.get(`${config.cybexDotMarketApiServer}market`, { params });
+  // console.log("market result:-------", result);
 
   if (result.status === 200) {
     return result.data;
