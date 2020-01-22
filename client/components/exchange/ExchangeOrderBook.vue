@@ -395,14 +395,6 @@ export default {
     // 请求RTE数据
     async getOrderBookByDigits() {
       let func = async () => {
-        const ticker = await CybexDotClient.getTicker(
-          CybexDotClient.TradePairHash
-        );
-        this.$store.commit("exchange/SET_CURRENT_RTE_PRICE", {
-          price: ticker.latest_matched_price / 10 ** 8,
-          legalPrice: null
-        });
-
         const orderBook = await CybexDotClient.getOrderBook(
           CybexDotClient.TradePairHash
         );

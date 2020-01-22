@@ -21,7 +21,7 @@ export const state = () => ({
   pair: pair,
   defaultAsset: "JADE.USDT",
   priceDigits: null,
-  tradesRefreshRate: 3000, // 频率 ms
+  tradesRefreshRate: 6000, // 频率 ms
   volume24h: null, //24小时成交量,
   currentRTEPrice: null, //当前成交价格
   currentRTELegalPrice: null, //当前成交法币价格
@@ -142,7 +142,7 @@ export const actions = {
       const pair = rootState.user.pairs ? rootState.user.pairs : pair;
       const firstBase = keys(pair);
       const firstQuote = keys(pair[firstBase[0]]);
-      const prefix = state.prefix; 
+      const prefix = state.prefix;
       toBase = checkDefaultPrefix(firstBase[0]) ? firstBase[0] : prefix + firstBase[0];
       toQuote = checkDefaultPrefix(firstQuote[0]) ? firstQuote[0] : prefix + firstQuote[0];
     } else if (path == 'contest') {
@@ -173,7 +173,7 @@ export const actions = {
     } else {
       quoteInfo['is_custom'] = false;
     }
-  
+
     // 非默认资产，根据名字查询id
     const rb = await g.queryAsset(state.baseCurrency)
     if (!base_id) {
@@ -182,7 +182,7 @@ export const actions = {
     } else {
       baseInfo['is_custom'] = false;
     }
-    
+
     if (!base_id || !quote_id) {
       console.error('no base found');
       rawlog('base_id', base_id);
@@ -191,7 +191,7 @@ export const actions = {
       return;
     }
     baseInfo['id'] = base_id;
-    baseInfo['symbol'] = rb ? rb.symbol : ''; 
+    baseInfo['symbol'] = rb ? rb.symbol : '';
     baseInfo['digits'] = rb ? rb.precision : null;
 
     quoteInfo['id'] = quote_id;
@@ -202,7 +202,7 @@ export const actions = {
     let findBase = await g.findBase(base_id, quote_id);
     console.log('search base id', findBase, base_id);
     // 跳转为正确顺序
-    if (findBase != base_id) { 
+    if (findBase != base_id) {
       console.log('redirect to ', `/${rootState.i18n.locale}/exchange/${baseInfo.symbol}_${quoteInfo.symbol}`)
       this.$router.push(`/${rootState.i18n.locale}/exchange/${baseInfo.symbol}_${quoteInfo.symbol}`);
     }
@@ -216,7 +216,7 @@ export const actions = {
     commit('SET_BASE_IS_CUSTOM', baseInfo.is_custom);
     commit('SET_QUOTE_IS_CUSTOM', quoteInfo.is_custom);
     commit('SET_BASE_DIGITS', baseInfo.digits);
-    commit('SET_QUOTE_DIGITS', quoteInfo.digits); 
+    commit('SET_QUOTE_DIGITS', quoteInfo.digits);
     commit('SET_ASSET_IS_CUSTOM', !isDefaultAsset);
     commit('SET_BASE_ID', baseInfo.id);
     commit('SET_QUOTE_ID', quoteInfo.id);

@@ -290,6 +290,10 @@ export default {
        let func = async () => {
         // 24小时数据
         const ticker = await CybexDotClient.getTicker(CybexDotClient.TradePairHash);
+        this.$store.commit("exchange/SET_CURRENT_RTE_PRICE", {
+          price: ticker.latest_matched_price / 10 ** 8,
+          legalPrice: null
+        });
         this.activityData = {
           latest: ticker.latest_matched_price / 10 ** 8,
           low: ticker.one_day_lowest_price / 10 ** 8,

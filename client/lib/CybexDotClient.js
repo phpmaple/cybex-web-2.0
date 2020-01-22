@@ -59,11 +59,11 @@ async function getMarket(pairHash, period, before) { // period: 1m 5m 1h 1d
     time = moment.utc().format("YYYY-MM-DD HH:mm:ss")
   }
 
-  const order = await getTicker(pairHash);
+  // const order = await getTicker(pairHash);
 
   // console.log("market request:-------", order.base, order.quote, intervalMap[period] ? intervalMap[period] : "1m", time);
 
-  const params = {time: time, interval: intervalMap[period] ? intervalMap[period] : "1m", base: order.base.replace("0x", ""), quote: order.quote.replace("0x", "")};
+  const params = {time: time, interval: intervalMap[period] ? intervalMap[period] : "1m", base: baseTokenHash.replace("0x", ""), quote: quoteTokenHash.replace("0x", "")};
   const result = await axios.get(`${config.cybexDotMarketApiServer}market`, { params });
   // console.log("market result:-------", result);
 
