@@ -51,8 +51,10 @@ export async function getHistoryData2(loader, base_id, quote_id, bucket_seconds,
     requestEndDate
   );
   barsData.forEach(data => {
+    let time = moment.utc(data.time).valueOf();
+
     bars.push({
-      time: data.time,
+      time: time,
       close: data.close / 10 ** 8,
       open: data.open / 10 ** 8,
       high: data.high / 10 ** 8,
