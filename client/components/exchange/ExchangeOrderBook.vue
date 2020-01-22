@@ -419,7 +419,7 @@ export default {
       if (!this.intervalRTE) {
         this.intervalRTE = setInterval(async () => {
           await func();
-        }, 500);
+        }, this.tradesRefreshRate);
       }
     },
 
@@ -551,7 +551,8 @@ export default {
       prefix: "exchange/prefix",
       currentOrderPrice: "exchange/currentRTEPrice",
       currentOrderLegalPrice: "exchange/currentRTELegalPrice",
-      netstatus: "exchange/netstatus"
+      netstatus: "exchange/netstatus",
+      refreshRate: "exchange/tradesRefreshRate"
     }),
     rowsFullHeight() {
       return this.$refs.container.clientHeight - 28 - 17 - 40; // current price, sub title, title
