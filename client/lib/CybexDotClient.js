@@ -68,7 +68,7 @@ async function getMarket(pairHash, period, before) { // period: 1m 5m 1h 1d
   // console.log("market result:-------", result);
 
   if (result.status === 200) {
-    return result.data;
+    return result.data.reverse();
   } else {
     throw_err("cybexDot get market request error");
   }
