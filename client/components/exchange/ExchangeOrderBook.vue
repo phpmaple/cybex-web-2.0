@@ -116,17 +116,17 @@
             v-if="currentNetStatus == 'error'"
             src="~assets/svg/ic-signal-error.svg"
             :alt="currentNetStatus"
-          />
+          >
           <img
             v-else-if="currentNetStatus == 'warning' "
             src="~assets/svg/ic-signal.svg"
             :alt="currentNetStatus"
-          />
+          >
           <img
             v-else-if="currentNetStatus == 'normal'"
             src="~assets/svg/ic-signal-normal.svg"
             :alt="currentNetStatus"
-          />
+          >
         </span>
         <div>
           <div class="status-tips-item">
@@ -419,7 +419,7 @@ export default {
       if (!this.intervalRTE) {
         this.intervalRTE = setInterval(async () => {
           await func();
-        }, this.tradesRefreshRate);
+        }, this.refreshRate);
       }
     },
 
