@@ -1,6 +1,5 @@
 <template>
   <v-layout class="container_layout" fill-height>
-    <version-dialog />
     <!-- left side -->
     <v-flex class="LeftSide" column>
       <!-- 实时动态开始 -->
@@ -110,7 +109,7 @@ export default {
       import("~/components/exchange/ExchangeHistoryOrder.vue"),
     ExchangeTradeHistory: () =>
       import("~/components/exchange/ExchangeHistoryTrade.vue"),
-    VersionDialog: () => import("~/components/VersionDialog.vue")
+    // VersionDialog: () => import("~/components/VersionDialog.vue")
   },
   data() {
     return {

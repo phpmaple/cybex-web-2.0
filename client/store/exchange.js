@@ -21,7 +21,7 @@ export const state = () => ({
   pair: pair,
   defaultAsset: "JADE.USDT",
   priceDigits: null,
-  tradesRefreshRate: 6000, // 频率 ms
+  tradesRefreshRate: 3000, // 频率 ms
   volume24h: null, //24小时成交量,
   currentRTEPrice: null, //当前成交价格
   currentRTELegalPrice: null, //当前成交法币价格
