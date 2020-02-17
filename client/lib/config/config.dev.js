@@ -38,7 +38,7 @@ export default {
   Use_RTE: process.env.USE_MDP === "1" ? true : false,
   Order_server: 'wss://apihk.cybex.io/',//  'wss://shanghai.51nebula.com/',//'wss://apihk.cybex.io/',
   sentry: {
-    enable: true,
+    enable: false,
     dns: "https://5c8d458e27214a1ebb01faf6e9b2d567@sentry.nbltrust.com/10"
   },
   top_asset: ["CYB", "BTC", "ETH", "USDT"],

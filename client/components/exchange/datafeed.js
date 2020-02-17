@@ -16,9 +16,16 @@ import CybexDotClient from "~/lib/CybexDotClient.js";
 export function convertResolutionByValue(value, source) {
   let search = invert(source);
   return search ? search[value] : null;
-};
+}
 
-export async function getHistoryData(loader, base_id, quote_id, bucket_seconds, requestStartDate, requestEndDate) {
+export async function getHistoryData(
+  loader,
+  base_id,
+  quote_id,
+  bucket_seconds,
+  requestStartDate,
+  requestEndDate
+) {
   let bars = [];
   let barsData = await loader.get_market_history(
     base_id,
@@ -42,7 +49,14 @@ export async function getHistoryData(loader, base_id, quote_id, bucket_seconds, 
   return bars;
 }
 
-export async function getHistoryData2(loader, base_id, quote_id, bucket_seconds, requestStartDate, requestEndDate) {
+export async function getHistoryData2(
+  loader,
+  base_id,
+  quote_id,
+  bucket_seconds,
+  requestStartDate,
+  requestEndDate
+) {
   let bars = [];
 
   let barsData = await CybexDotClient.getMarket(
@@ -65,7 +79,6 @@ export async function getHistoryData2(loader, base_id, quote_id, bucket_seconds,
   return bars;
 }
 
-
 export class Datafeed {
   cybexjs;
   base_id;
@@ -78,16 +91,22 @@ export class Datafeed {
     high: null,
     close: null,
     volume: null
-  }
+  };
   // 时间间隔
   resolution;
   // 小数点精度
   pricescale;
-  dateDisplayFormat = "YYYY/MM/DD";// 显示用moment日期格式
+  dateDisplayFormat = "YYYY/MM/DD"; // 显示用moment日期格式
   dateXHRFormat = "YYYY-MM-DDTHH:mm:ss"; // 调用接口moment日期格式
   datepickerFormat = "YYYY-MM-DD"; // 控件需要的moment日期格式
   constructor(data) {
-    ({ cybexjs: this.cybexjs, base_id: this.base_id, quote_id: this.quote_id, resolution: this.resolution, pricescale: this.pricescale } = data);
+    ({
+      cybexjs: this.cybexjs,
+      base_id: this.base_id,
+      quote_id: this.quote_id,
+      resolution: this.resolution,
+      pricescale: this.pricescale
+    } = data);
   }
   onReady(callback) {
     let config = {
@@ -98,7 +117,7 @@ export class Datafeed {
       supports_timescale_marks: false,
       supports_time: false
     };
-    return setTimeout(function () {
+    return setTimeout(function() {
       callback(config);
     }, 0);
   }
@@ -106,11 +125,11 @@ export class Datafeed {
     console.log("chart searchSymbols");
     // search function
     onResultReadyCallback();
-  };
+  }
 
   resolveSymbol(symbolName, onSymbolResolvedCallback, onResolveErrorCallback) {
-    symbolName = symbolName.split('_');
-    symbolName = symbolName[1] + '_' + symbolName[0];
+    symbolName = symbolName.split("_");
+    symbolName = symbolName[1] + "_" + symbolName[0];
     let symbol_stub = {
       name: symbolName,
       ticker: symbolName,
@@ -127,23 +146,34 @@ export class Datafeed {
       seconds_multipliers: values(this.resolution),
       supported_resolution: values(this.resolution),
       volume_precision: 8,
-      data_status: "streaming",
+      data_status: "streaming"
     };
     if (symbol_stub) {
-      setTimeout(function () {
+      setTimeout(function() {
         onSymbolResolvedCallback(symbol_stub);
       }, 0);
     } else {
-      setTimeout(function () {
+      setTimeout(function() {
         onResolveErrorCallback("can not find by symbol name" + symbolName);
       }, 0);
     }
   }
   /**
-    * 根据from to时间范围筛选历史数据
-    */
-  async getBars(symbolInfo, currentResolution, startDate, endDate, onHistoryCallback, onErrorCallback, firstDataRequest) {
-    let bucket_seconds = convertResolutionByValue(currentResolution, this.resolution);
+   * 根据from to时间范围筛选历史数据
+   */
+  async getBars(
+    symbolInfo,
+    currentResolution,
+    startDate,
+    endDate,
+    onHistoryCallback,
+    onErrorCallback,
+    firstDataRequest
+  ) {
+    let bucket_seconds = convertResolutionByValue(
+      currentResolution,
+      this.resolution
+    );
     if (!bucket_seconds) {
       bucket_seconds = 60;
     }
@@ -161,7 +191,14 @@ export class Datafeed {
       .utc()
       .format("YYYY-MM-DD HH:mm:ss");
     try {
-      this.bars = await getHistoryData2(this.cybexjs, this.base_id, this.quote_id, bucket_seconds, start, end);
+      this.bars = await getHistoryData2(
+        this.cybexjs,
+        this.base_id,
+        this.quote_id,
+        bucket_seconds,
+        start,
+        end
+      );
 
       if (this.bars.length) {
         this.lastBar = this.bars[this.bars.length - 1];
@@ -175,9 +212,45 @@ export class Datafeed {
       onErrorCallback(err);
     }
   }
+  calculateHistoryDepth(resolution, resolutionBack, intervalBack) {
+    let returnValue;
+    if (resolution == "1") {
+      returnValue = {
+        resolutionBack: "",
+        intervalBack: 200
+      };
+    } else if (resolution == "5") {
+      returnValue = {
+        resolutionBack: "",
+        intervalBack: 200 * 5
+      };
+    } else if (resolution == "60") {
+      returnValue = {
+        resolutionBack: "",
+        intervalBack: 200 * 60
+      };
+    } else {
+      returnValue = {
+        resolutionBack: "D",
+        intervalBack: 200
+      };
+    }
+    console.log("return Resolution", returnValue);
 
-  async subscribeBars(symbolInfo, currentResolution, onRealtimeCallback, subscriberUID, onResetCacheNeededCallback) {
-    let bucket_seconds = convertResolutionByValue(currentResolution, this.resolution);
+    return returnValue;
+  }
+
+  async subscribeBars(
+    symbolInfo,
+    currentResolution,
+    onRealtimeCallback,
+    subscriberUID,
+    onResetCacheNeededCallback
+  ) {
+    let bucket_seconds = convertResolutionByValue(
+      currentResolution,
+      this.resolution
+    );
     if (!bucket_seconds) {
       bucket_seconds = 60;
     }
@@ -190,29 +263,36 @@ export class Datafeed {
       let end = moment()
         .utc()
         .format("YYYY-MM-DD HH:mm:ss");
-      let bars = await getHistoryData2(this.cybexjs, this.base_id, this.quote_id, bucket_seconds, start, end);
+      let bars = await getHistoryData2(
+        this.cybexjs,
+        this.base_id,
+        this.quote_id,
+        bucket_seconds,
+        start,
+        end
+      );
       if (bars.length) {
         let newLastBar = bars[bars.length - 1];
         this.lastBar = newLastBar;
         onRealtimeCallback(newLastBar);
         // console.log('============ subscribeBars new bars', newLastBar);
       }
-    }
+    };
     await requestNewBar();
     if (!this.intervalGetNewBar) {
       this.intervalGetNewBar = setInterval(async () => {
         await requestNewBar();
-      }, 3000)
+      }, 3000);
     }
 
     /**
      *  @param bar object{time, close, open, high, low, volume}
      */
-  };
+  }
 
   unsubscribeBars(subscriberUID) {
     // console.log("=====unsubscribeBars runnning", subscriberUID);
     clearInterval(this.intervalGetNewBar);
     this.intervalGetNewBar = null;
-  };
+  }
 }

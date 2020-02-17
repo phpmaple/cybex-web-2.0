@@ -4,8 +4,12 @@
       <!-- <span class="cybex-icon-candle mr-2"/> -->
       <span class="flex-label">
         <span>
-          <v-icon class="ind-icon" size="20" v-text="'ic-indicators'"/>
-          <span class="ml-0 pl-0" @click="toggleIndicatorDialog" v-text="$t('exchange.content.indicators')"/>
+          <v-icon class="ind-icon" size="20" v-text="'ic-indicators'" />
+          <span
+            class="ml-0 pl-0"
+            @click="toggleIndicatorDialog"
+            v-text="$t('exchange.content.indicators')"
+          />
         </span>
         <span
           v-for="(resItem, idx) of resolutionItems"
@@ -15,12 +19,14 @@
         >{{ $t("exchange.content."+resItem.label) }}</span>
       </span>
       <v-flex class="text-right">
-        <v-btn :ripple="false" class="pa-0 ma-0 full-size" small icon @click="toggleFullScreen"><v-icon size="20">ic-full</v-icon></v-btn>
+        <v-btn :ripple="false" class="pa-0 ma-0 full-size" small icon @click="toggleFullScreen">
+          <v-icon size="20">ic-full</v-icon>
+        </v-btn>
       </v-flex>
     </v-flex>
 
-    <loading v-if="!isReady"/>
-    <div :id="containerId"/>
+    <loading v-if="!isReady" />
+    <div :id="containerId" />
   </v-flex>
 </template>
 
@@ -83,7 +89,7 @@ export default {
         { key: "60", value: "3600", label: "1H", disabled: false },
         { key: "1D", value: "86400", label: "1D", disabled: false }
       ],
-      currentResolution: '60',
+      currentResolution: "60",
       resolution: {
         // 15: "15S",
         60: "1",
@@ -124,7 +130,7 @@ export default {
     },
     timeframe: function() {
       return "";
-    },
+    }
   },
   methods: {
     changeResolution: function(item) {
@@ -171,7 +177,7 @@ export default {
       toolbar_bg: this.bgColor,
       loading_screen: {
         backgroundColor: this.bgColor,
-        foregroundColor: this.bgColor,
+        foregroundColor: this.bgColor
       },
       container_id: this.containerId,
       library_path: this.libraryPath,
@@ -221,7 +227,7 @@ export default {
         "paneProperties.legendProperties.showSeriesOHLC": true, // 显示最高最低价格
         "paneProperties.legendProperties.showLegend": true,
         "mainSeriesProperties.style": 1, // 默认使用k线图,
-        "scalesProperties.textColor" : "rgba(255, 255, 255, 0.5)", // 坐标轴文本颜色
+        "scalesProperties.textColor": "rgba(255, 255, 255, 0.5)", // 坐标轴文本颜色
         // k线图颜色
         "mainSeriesProperties.candleStyle.wickUpColor": this.upColor,
         "mainSeriesProperties.candleStyle.wickDownColor": this.downColor,
@@ -229,9 +235,9 @@ export default {
         "mainSeriesProperties.candleStyle.downColor": this.downColor,
         // 修改border颜色才会更改最高最低价格颜色
         "mainSeriesProperties.candleStyle.borderUpColor": this.upColor,
-        "mainSeriesProperties.candleStyle.borderDownColor": this.downColor, 
+        "mainSeriesProperties.candleStyle.borderDownColor": this.downColor,
         "mainSeriesProperties.candleStyle.drawBorder": false,
-        
+
         "mainSeriesProperties.haStyle.upColor": this.upColor,
         "mainSeriesProperties.haStyle.downColor": this.downColor,
         "mainSeriesProperties.haStyle.borderUpColor": this.upColor,
@@ -245,16 +251,22 @@ export default {
         "mainSeriesProperties.hollowCandleStyle.upColor": this.upColor,
         "mainSeriesProperties.hollowCandleStyle.downColor": this.downColor,
         "mainSeriesProperties.hollowCandleStyle.borderUpColor": this.upColor,
-        "mainSeriesProperties.hollowCandleStyle.borderDownColor": this.downColor,
+        "mainSeriesProperties.hollowCandleStyle.borderDownColor": this
+          .downColor,
 
-        "mainSeriesProperties.baselineStyle.topFillColor1": "rgba(109, 187, 73, 0.3)",
-        "mainSeriesProperties.baselineStyle.topFillColor2": "rgba(109, 187, 73, 0.3)",
-        "mainSeriesProperties.baselineStyle.bottomFillColor1": "rgba(190, 70, 52, 0.3)",
-        "mainSeriesProperties.baselineStyle.bottomFillColor2": "rgba(190, 70, 52, 0.3)",
-        "mainSeriesProperties.baselineStyle.topLineColor": "rgba(109, 187, 73, 0.3)",
-        "mainSeriesProperties.baselineStyle.bottomLineColor": "rgba(190, 70, 52, 0.3)",
+        "mainSeriesProperties.baselineStyle.topFillColor1":
+          "rgba(109, 187, 73, 0.3)",
+        "mainSeriesProperties.baselineStyle.topFillColor2":
+          "rgba(109, 187, 73, 0.3)",
+        "mainSeriesProperties.baselineStyle.bottomFillColor1":
+          "rgba(190, 70, 52, 0.3)",
+        "mainSeriesProperties.baselineStyle.bottomFillColor2":
+          "rgba(190, 70, 52, 0.3)",
+        "mainSeriesProperties.baselineStyle.topLineColor":
+          "rgba(109, 187, 73, 0.3)",
+        "mainSeriesProperties.baselineStyle.bottomLineColor":
+          "rgba(190, 70, 52, 0.3)",
 
-        
         // 时区
         timezone: moment.tz.guess()
         // editorFontsList: ['cybex-medium', 'Verdana', 'Courier New', 'Times New Roman', 'Arial']
@@ -281,6 +293,7 @@ export default {
           precision: averagePrecision
         });
     });
+
     // this.tvWidget.chart().subscribe(null, "onDataLoaded", () => {
     //   console.log("data reloaded");
     // });
@@ -297,19 +310,23 @@ export default {
   width: 100%;
   min-height: k-line-min-height;
 }
-.small-size
-  .tv-chart-container  {
+
+.small-size {
+  .tv-chart-container {
     height: 'calc(60% - %s)' % small-activity-height;
   }
+}
+
 .tv-chart-container {
   position: relative;
   min-height: 'calc(%s + %s)' % (k-line-min-height k-line-toolbar-height);
   height: 'calc(60% - %s)' % activity-height;
+
   &.fullscreen {
     position: fixed;
     width: 100%;
     height: 100%;
-    top:0;
+    top: 0;
     left: 0;
     z-index: 9;
     background: #171d2a;
@@ -322,24 +339,30 @@ export default {
 }
 
 .chart-tools {
-  height: k-line-toolbar-height
+  height: k-line-toolbar-height;
+
   .full-size {
     width: k-line-toolbar-height;
-    height k-line-toolbar-height;
+    height: k-line-toolbar-height;
   }
+
   .flex-label {
     > span {
       padding: 5px 7px 3px;
       box-shadow: inset 0 -1px 0 0 #111621;
+
       &:first-child {
         margin-right: -2px;
       }
+
       &.active {
         color: #FF9143;
       }
+
       border-radius: 0;
       margin: 8px 1px;
     }
+
     i {
       height: 14px;
       padding-bottom: 2px;
