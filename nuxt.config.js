@@ -97,18 +97,15 @@ export default {
     '~plugins/i18n',
     '~plugins/vuetify',
     '~plugins/filter',
-    { 
-      src: '~plugins/detect',  
+    {
+      src: '~plugins/detect',
       ssr: false
     },
     {
       src: '~plugins/ga.js',
       ssr: false
     },
-    {
-      src: '~plugins/umeng.js',
-      ssr: false
-    },
+
     {
       src: '~plugins/cybex',
       ssr: false

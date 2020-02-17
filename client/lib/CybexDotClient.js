@@ -52,7 +52,7 @@ async function getOrderBook(pairHash) {
   }
 }
 
-async function getMarket(pairHash, period, before) { // period: 1m 5m 1h 1d
+async function getMarket(pairHash, period, before, limit=200) { // period: 1m 5m 1h 1d
   let time = before;
   const intervalMap = {60: "1m", 300: "5m", 3600: "1h", 86400: "1d"}
   if (!time) {
@@ -63,7 +63,7 @@ async function getMarket(pairHash, period, before) { // period: 1m 5m 1h 1d
 
   // console.log("market request:-------", order.base, order.quote, intervalMap[period] ? intervalMap[period] : "1m", time);
 
-  const params = {time: time, interval: intervalMap[period] ? intervalMap[period] : "1m", base: baseTokenHash.replace("0x", ""), quote: quoteTokenHash.replace("0x", "")};
+  const params = {time: time, interval: intervalMap[period] ? intervalMap[period] : "1m", base: baseTokenHash.replace("0x", ""), quote: quoteTokenHash.replace("0x", ""), limit: limit};
   const result = await axios.get(`${config.cybexDotMarketApiServer}market`, { params });
   // console.log("market result:-------", result);
 

@@ -55,14 +55,16 @@ export async function getHistoryData2(
   quote_id,
   bucket_seconds,
   requestStartDate,
-  requestEndDate
+  requestEndDate,
+  limit = 200
 ) {
   let bars = [];
 
   let barsData = await CybexDotClient.getMarket(
     CybexDotClient.TradePairHash,
     bucket_seconds,
-    requestEndDate
+    requestEndDate,
+    limit
   );
   barsData.forEach(data => {
     let time = moment.utc(data.time).valueOf();
@@ -178,10 +180,7 @@ export class Datafeed {
       bucket_seconds = 60;
     }
     // console.log('============= currentResolution:', currentResolution, this.resolution);
-    if (this.intervalGetNewBar) {
-      clearInterval(this.intervalGetNewBar);
-      this.intervalGetNewBar = null;
-    }
+
     let start = moment
       .unix(endDate - bucket_seconds * 200)
       .utc()
@@ -201,7 +200,6 @@ export class Datafeed {
       );
 
       if (this.bars.length) {
-        this.lastBar = this.bars[this.bars.length - 1];
         onHistoryCallback(this.bars, { noData: false });
       } else {
         console.log("no more bar data");
@@ -269,20 +267,25 @@ export class Datafeed {
         this.quote_id,
         bucket_seconds,
         start,
-        end
+        end,
+        10
       );
       if (bars.length) {
         let newLastBar = bars[bars.length - 1];
         this.lastBar = newLastBar;
         onRealtimeCallback(newLastBar);
-        // console.log('============ subscribeBars new bars', newLastBar);
+        console.log(
+          "============ subscribeBars new bars",
+          newLastBar,
+          subscriberUID
+        );
       }
     };
     await requestNewBar();
     if (!this.intervalGetNewBar) {
       this.intervalGetNewBar = setInterval(async () => {
         await requestNewBar();
-      }, 3000);
+      }, 6000);
     }
 
     /**
@@ -291,7 +294,7 @@ export class Datafeed {
   }
 
   unsubscribeBars(subscriberUID) {
-    // console.log("=====unsubscribeBars runnning", subscriberUID);
+    console.log("=====unsubscribeBars runnning", subscriberUID);
     clearInterval(this.intervalGetNewBar);
     this.intervalGetNewBar = null;
   }
